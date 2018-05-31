@@ -23,6 +23,19 @@ unsigned int signExtend8to32ui(char i) {
   return static_cast<unsigned int>(static_cast<int>(i));
 }
 
+// Given a binary instruction, separates the immediate and sign extends it
+// from 11 to 32 bits
+// Types: short -> int
+// Arguments: a binary instruction
+// Returns: the offset from the instruction, sign-extended to 32 bits
+int signExtend11to32ui(short instruction){
+	short i;
+	int clear_to = 2^11
+	//clear the 5 leftmost bits (leaves just the offset)
+	i = instruction%clear_to
+	return static_cast<int>(i);
+}
+
 // This is the global object you'll use to store condition codes N,Z,V,C
 // Set these bits appropriately in execute below.
 ASPR flags;
@@ -30,6 +43,21 @@ ASPR flags;
 // CPE 315: You need to implement a function to set the Negative and Zero
 // flags for each instruction that does that. It only needs to take
 // one parameter as input, the result of whatever operation is executing
+void setNegZero(int num){
+	if(num == 0){
+		flags.Z = 1;
+	}
+	else{
+		flags.Z = 0;
+	}
+	if(num < 0){
+		flags.N = 1;
+	}
+	else{
+		flags.N = 0;
+	}
+	
+}
 
 // This function is complete, you should not have to modify it
 void setCarryOverflow (int num1, int num2, OFType oftype) {
@@ -99,30 +127,69 @@ static int checkCondition(unsigned short cond) {
       }
       break;
     case NE:
+	if (flags.Z == 0){
+		return TRUE;
+	}
       break;
     case CS:
+	if(flags.C == 1){
+		return TRUE;
+	}
       break;
     case CC:
+	if(flags.C == 0){
+		return TRUE;
+	}
       break;
     case MI:
+      	if(flags.N == 1){
+		return TRUE;
+	}
       break;
     case PL:
+      if(flags.N == 0){
+      	return TRUE;
+      }
       break;
     case VS:
+      if(flags.V == 1){
+      	return TRUE;
+      }
       break;
     case VC:
+      if(flags.V == 0){
+      	return TRUE;
+      }
       break;
     case HI:
+      if(flags.C == 1 && flags.Z == 0){
+      	return TRUE;
+      }
       break;
     case LS:
+      if(flags.C == 0 || falgs.Z == 1){
+      	return TRUE;
+      }
       break;
     case GE:
+      if(flags.N == flags.V){
+      	return TRUE;
+      }
       break;
     case LT:
+      if(flags.N != flags.V){
+      	return TRUE;
+      }
       break;
     case GT:
+      if(flags.Z == 0 && flags.N == flags.V){
+      	return TRUE;
+      }
       break;
     case LE:
+      if(flags.Z == 1 || flags.N != flags.V){
+      	return TRUE;
+      }
       break;
     case AL:
       return TRUE;
