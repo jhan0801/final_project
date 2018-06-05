@@ -208,7 +208,7 @@ void execute() {
   unsigned int addr;
   int i, n, offset;
   unsigned int list, mask;
-  int num1, num2, result, BitCount;
+  int num1, num2, result, BitCount, word;
   unsigned int bit;
 
   /* Convert instruction to correct type */
@@ -410,15 +410,33 @@ void execute() {
           break;
         case STRBI:
           // need to implement
+          // 2 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
+          stats.numRegReads += 2;
+	  stats.numMemwrites++;
+	  addr = rf[ld_st.instr.ld_st_imm.rm] + ld_st.instr.ld_st_imm.imm;
+	  word = dmem[addr];
+	  // floor word address to get mask, apply that to the address to get
+	  // just the last couple bits for ubyte index(remember its inverted in data_ubyte)
           break;
         case LDRBI:
           // need to implement
+	  // 1 reg read, 1 reg write, 1 mem read, 0 mem writes, no flag updates
+	  stats.numRegReads++;
+	  stats.numRegWrites++;
+	  stats.numMemReads++;
           break;
         case STRBR:
           // need to implement
+	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
+	  stats.numRegReads += 3;
+	  stats.numMemWrites++;
           break;
         case LDRBR:
           // need to implement
+	  // 2 reg reads, 1 reg write, 1 mem read, 0 mem writes, no flag updates
+	  stats.numRegReads += 2;
+	  stats.numRegWrites++;
+	  stats.numMemReads++;
           break;
       }
       break;
@@ -427,16 +445,24 @@ void execute() {
       switch(misc_ops) {
         case MISC_PUSH:
           // need to implement
+	  // 1 reg read, 1 reg write
+	  rf.write(SP_REG, SP - (
           break;
         case MISC_POP:
           // need to implement
           break;
         case MISC_SUB:
           // functionally complete, needs stats
+	  // 1 reg read, 1 reg write, no memory access, no flag updates
+	  stats.numRegReads++;
+	  stats.numRegWrites++;
           rf.write(SP_REG, SP - (misc.instr.sub.imm*4));
           break;
         case MISC_ADD:
           // functionally complete, needs stats
+	  // 1 reg read, 1 reg write, no memory access, no flag updates
+	  stats.numRegReads++;
+	  stats.numRegWrites++;
           rf.write(SP_REG, SP + (misc.instr.add.imm*4));
           break;
       }
