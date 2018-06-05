@@ -30,7 +30,7 @@ using namespace std;
 #define LD_ST_IMMB_OPA 7
 #define LD_ST_IMMH_OPA 8
 #define LD_ST_IMMSP_OPA 9
-#define LD_ST_STB 14 
+#define LD_ST_STB 14
 #define LD_ST_LDB 15
 #define UNCOND_TYPE 28
 #define ADD_SP_TYPE 21
@@ -77,6 +77,14 @@ struct ALU_ADDR_Instr {
    unsigned short type: 2;
 };
 
+struct ALU_SUBR_Instr {
+   unsigned short rd: 3;
+   unsigned short rn: 3;
+   unsigned short rm: 3;
+   unsigned short op: 5;
+   unsigned short type: 2;
+}
+
 typedef ALU_ADDR_Instr ALU_SUBR_Instr;
 
 struct ALU_ADD3I_Instr {
@@ -87,9 +95,24 @@ struct ALU_ADD3I_Instr {
    unsigned short type: 2;
 };
 
+struct ALU_SUB3I_Instr {
+   unsigned short rd: 3;
+   unsigned short rn: 3;
+   unsigned short imm: 3;
+   unsigned short op: 5;
+   unsigned short type: 2;
+};
+
 typedef ALU_ADD3I_Instr ALU_SUB3I_Instr;
 
 struct ALU_ADD8I_Instr {
+   unsigned short imm: 8;
+   unsigned short rdn: 3;
+   unsigned short op: 3;
+   unsigned short type: 2;
+};
+
+struct ALU_SUB8I_Instr {
    unsigned short imm: 8;
    unsigned short rdn: 3;
    unsigned short op: 3;
@@ -135,7 +158,7 @@ struct DP_Type {
          unsigned short op: 4;
          unsigned short type: 6;
       } DP_Instr;
-   } instr; 
+   } instr;
 };
 
 /* Special Types */
@@ -270,7 +293,7 @@ struct COND_B_Instr {
    unsigned short imm: 8;
    unsigned short cond: 4;
    unsigned short op: 4;
-}; 
+};
 
 struct COND_Type {
    union {
@@ -294,7 +317,7 @@ struct BL_Upper_Instr {
   unsigned short imm10: 10;
   unsigned short s: 1;
   unsigned short op2: 5;
-}; 
+};
 
 struct BL_Type {
    union {
@@ -387,10 +410,10 @@ struct ADD_SP_Type {
          unsigned short type_check: 5;
       } class_type;
       ADD_SP_Instr add;
-   } instr; 
+   } instr;
 };
 
-class ALL_Types{ 
+class ALL_Types{
    public:
       union {
          unsigned short mem;
@@ -498,8 +521,8 @@ class Data16 {
    public:
       Data16() {}
       Data16(const unsigned short & _d) {d._ushort = _d; }
-      Data16(const unsigned char & d0, 
-            const unsigned char & d1) { 
+      Data16(const unsigned char & d0,
+            const unsigned char & d1) {
          set_data_ubyte2(0, d0);
          set_data_ubyte2(1, d1);
       }
@@ -507,17 +530,17 @@ class Data16 {
       operator unsigned short() const { return data_ushort(); }
       bool operator==(const Data16 & dd) const { return (data_ushort() == dd.data_ushort()); }
       bool operator!=(const Data16 & dd) const { return (data_ushort() != dd.data_ushort()); }
-      inline void set_data_short(short arg) { 
-         d._short = arg; 
+      inline void set_data_short(short arg) {
+         d._short = arg;
       }
       inline short data_short(void) const {
-         return d._short; 
+         return d._short;
       }
       inline void set_data_ushort(unsigned short arg) {
          d._ushort = arg;
       }
       inline unsigned short data_ushort(void) const {
-         return d._ushort; 
+         return d._ushort;
       }
       inline void set_data_ubyte2(short i, unsigned char arg) {
          d._ubyte2[1-i] = arg;
@@ -525,7 +548,7 @@ class Data16 {
       }
       inline unsigned char data_ubyte2(short i) const {
          //cout << "data_ubyte4 " << d._ubyte4[3-1] << endl;
-         return d._ubyte2[1-i]; 
+         return d._ubyte2[1-i];
       }
       static void printD(const Data16 d) {
          cout << hex << d.data_ushort() << endl;
@@ -554,10 +577,10 @@ class Data32 {
    public:
       // Data32() {}
       Data32(const unsigned int & _d) {d._uint = _d; }
-      Data32(const unsigned char & d0, 
-            const unsigned char & d1, 
-            const unsigned char & d2, 
-            const unsigned char & d3) { 
+      Data32(const unsigned char & d0,
+            const unsigned char & d1,
+            const unsigned char & d2,
+            const unsigned char & d3) {
          set_data_ubyte4(0, d0);
          set_data_ubyte4(1, d1);
          set_data_ubyte4(2, d2);
@@ -567,17 +590,17 @@ class Data32 {
       operator unsigned int() const { return data_uint(); }
       bool operator==(const Data32 & dd) const { return (data_uint() == dd.data_uint()); }
       bool operator!=(const Data32 & dd) const { return (data_uint() != dd.data_uint()); }
-      inline void set_data_int(int arg) { 
-         d._int = arg; 
+      inline void set_data_int(int arg) {
+         d._int = arg;
       }
       inline int data_int(void) const {
-         return d._int; 
+         return d._int;
       }
       inline void set_data_uint(unsigned int arg) {
          d._uint = arg;
       }
       inline unsigned int data_uint(void) const {
-         return d._uint; 
+         return d._uint;
       }
       inline void set_data_ubyte4(int i, unsigned char arg) {
          d._ubyte4[3-i] = arg;
@@ -585,7 +608,7 @@ class Data32 {
       }
       inline unsigned char data_ubyte4(int i) const {
          //cout << "data_ubyte4 " << d._ubyte4[3-1] << endl;
-         return d._ubyte4[3-i]; 
+         return d._ubyte4[3-i];
       }
       static void printD(const Data32 d) {
          cout << hex << d.data_uint() << endl;
@@ -607,7 +630,7 @@ class Memory {
       Memory() : m(0), base(0), lowest(0xffffffff), highest(0) {}
       Memory(unsigned int _base) : m(0), base(_base), lowest(0xffffffff),
       highest(0) {}
-      Memory(unsigned int size, Stored d) : m(size, d), base(0), 
+      Memory(unsigned int size, Stored d) : m(size, d), base(0),
       lowest(0xffffffff), highest(0) {}
       unsigned int size() const { return m.size(); }
       typename vector<Stored>::const_iterator begin() const { return m.begin(); }
@@ -617,7 +640,7 @@ class Memory {
       // Accessed & operator[](const unsigned int addr);
       void dump(DataType dt) const;
       unsigned int getBase() const { return base; }
-      bool inRange(unsigned int r) { return (r >= base) && (r < base + size()); } 
+      bool inRange(unsigned int r) { return (r >= base) && (r < base + size()); }
 };
 
 class Register {
@@ -650,7 +673,7 @@ class Cache {
       bool access(unsigned int address);
       void printStats() const {
          cout << dec << size << " byte cache (blocksize " << dec << blocksize
-            << " bytes): " << hits << " hits, " << misses << " misses (hit rate: " 
+            << " bytes): " << hits << " hits, " << misses << " misses (hit rate: "
                               << (static_cast<float>(hits) * 100.0f /
                                     static_cast<float>(hits + misses)) << "%)" << endl;
       }
@@ -793,7 +816,7 @@ typedef enum MISC_Ops {
    MISC_SUB,
    MISC_SXTH,
    MISC_SXTB,
-   MISC_UXTH, 
+   MISC_UXTH,
    MISC_UXTB,
    MISC_PUSH,
    MISC_CPS,
@@ -845,5 +868,5 @@ int decode (const LDM_Type);
 int decode (const STM_Type);
 int decode (const LDRL_Type);
 int decode (const ADD_SP_Type);
-void execute();  
+void execute();
 #endif
