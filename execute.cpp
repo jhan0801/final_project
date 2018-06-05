@@ -248,25 +248,52 @@ void execute() {
         case ALU_LSLI:
           break;
         case ALU_ADDR:
-          // needs stats and flags
+          // N, Z, C, V flags set, reg reads + 2, writes + 1, no mem access
+	  setCarryOverflow(rf[alu.instr.addr.rn], rf[alu.instr.addr.rn], OF_ADD);
+	  setNegZero(rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
+          stats.numRegReads += 2;
+`	  stats.numRegWrites += 1;
           rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
           break;
         case ALU_SUBR:
+	  // N, Z, C, V flags set, reg reads + 2, writes + 1, no mem access
+	  setCarryOverflow(rf[alu.instr.subr.rn], rf[alu.instr.subr.rn], OF_SUB);
+	  setNegZero(rf[alu.instr.subr.rn] - rf[alu.instr.subr.rm]);
+	  stats.numRegReads += 2;
+	  stats.numRegWrites += 1;
+	  rf.write(alu.instr.subr.rd, rf[alu.instr.subr.rn] - rf[alu.instr.subr.rm]);
           break;
         case ALU_ADD3I:
-          // needs stats and flags
+          // N, Z, C, V flags set, reg reads and writes each incremented, no mem access
+          stats.numRegReads += 1;
+	  stats.numRegWrites += 1;
+	  setCarryOverflow(rf[alu.instr.add3i.rn], rf[alu.instr.add3i.rn], OF_ADD);
+	  setNegZero(rf[alu.instr.add3i.rn] + rf[alu.instr.add3i.rm]);
           rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);
           break;
         case ALU_SUB3I:
+	  // N, Z, C, V flags set, reg reads and writes incremented, no mem access
+	  stats.numRegReads += 1;
+	  stats.numRegWrites += 1;
+	  setCarryOverflow(rf[alu.instr.sub3i.rn], rf[alu.instr.sub3i.rn], OF_SUB);
+	  setNegZero(rf[alu.instr.sub3i.rn] - rf[alu.instr.sub3i.rm]);
+	  rf.write(alu.instr,sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
           break;
         case ALU_MOV:
-          // needs stats and flags
+          // N and Z flags set, reg reads and writes incremented, no mem access
+	  setNegZero(rf[alu.instr.mov.rdn])
+          stats.numRegReads += 1;
+	  stats,numRegWrites += 1;
           rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
           break;
         case ALU_CMP:
           break;
         case ALU_ADD8I:
-          // needs stats and flags
+          // N, Z, C, V flags set, reg reads and writes each + 1, no mem access
+          stats.numRegReads += 1;
+	  stats.numRegWrites += 1;
+	  setNegZero(rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
+	  setCarryOverflow(rf[alu.instr.add8i.rdn], alu.instr.add8i.imm, OF_ADD);
           rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
           break;
         case ALU_SUB8I:
@@ -320,12 +347,24 @@ void execute() {
       sp_ops = decode(sp);
       switch(sp_ops) {
         case SP_MOV:
-          // needs stats and flags
+          // 1 each of reg write and read, no mem access, N, Z flags set
+	  stats.numRegReads++;
+	  stats.numRegWrites++;
+	  setNegZero(rf[sp.instr.mov.rm]);
           rf.write((sp.instr.mov.d << 3 ) | sp.instr.mov.rd, rf[sp.instr.mov.rm]);
           break;
         case SP_ADD:
+	  // 2 reg reads, 1 reg write, no mem access, N, Z, C, V flags set
+	  rf.write((sp.instr.add.d << 3) | sp.instr.add.rd, rf[sp.instr.add.rm] + rf[sp.instr.add.rn]);
+	  setNegZero(rf[sp.instr.add.rm] + rf[sp.inst.add.rn]);
+	  setCarryOverflow(rf[sp.instr.add.rm], rf[sp.instr.add.rn], OF_ADD);
+	  stats.numRegReads += 2;
+	  stats.numRegWrites++;
         case SP_CMP:
-          // need to implement these
+	  // 2 reg reads, 0 reg writes, no mem acces, N, Z, C, V flags set
+	  stats.numRegReads += 2;
+          setNegZero(rf[sp.instr.cmp.rn] - rf[sp.instr.cmp.rm]);
+	  setCarryOverflow(rf[sp.instr.cmp.rn], rf[sp.instr.cmp.rm], OF_SUB);
           break;
       }
       break;
@@ -336,19 +375,38 @@ void execute() {
       switch(ldst_ops) {
         case STRI:
           // functionally complete, needs stats
+	  // 2 reg reads, 1 reg write, 0 mem reads, 1 mem write
           addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
+	  stats.numRegReads += 2;
+	  stats.numRegWrites++;
+	  stats.numMemReads++;
           break;
         case LDRI:
           // functionally complete, needs stats
+	  // 1 reg reads, 1 reg writes, 1 mem read, 0 mem writes
           addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
           rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
+	  stats.numRegReads++;
+	  stats.numRegWrites++;
+	  stats.numMemReads++;
           break;
         case STRR:
           // need to implement
+	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write
+	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st.rm] * 4;
+	  dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
+	  stats.numRegReads += 3;
+	  stats.numMemWrites++;
           break;
         case LDRR:
           // need to implement
+	  // 2 reg reads, 1 reg write, 1 mem read, 0 mem writes
+	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm] * 4;
+	  rf.write(rf[ld_st.instr.ld_st_reg.rt], dmem[addr]);
+	  stats.numRegReads += 2;
+	  stats.numRegWrites++;
+	  stats.numMemReads++;
           break;
         case STRBI:
           // need to implement
