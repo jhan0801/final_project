@@ -339,7 +339,10 @@ void execute() {
       dp_ops = decode(dp);
       switch(dp_ops) {
         case DP_CMP:
-          // need to implement
+	  // 2 reg reads, 0 reg writes, no mem access, N, Z, C, V flags set
+	  stats.numRegReads += 2;
+	  setNegZero(rf[dp.instr.cmp.rn] - rf[dp.instr.cmp.rm]);
+	  setCarryOverflow(rf[dp.instr.cmp.rn], rf[dp.instr.cmp.rm], OF_SUB);
           break;
       }
       break;
@@ -374,7 +377,6 @@ void execute() {
       ldst_ops = decode(ld_st);
       switch(ldst_ops) {
         case STRI:
-          // functionally complete, needs stats
 	  // 2 reg reads, 1 reg write, 0 mem reads, 1 mem write
           addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
@@ -383,7 +385,6 @@ void execute() {
 	  stats.numMemReads++;
           break;
         case LDRI:
-          // functionally complete, needs stats
 	  // 1 reg reads, 1 reg writes, 1 mem read, 0 mem writes
           addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
           rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
@@ -392,7 +393,6 @@ void execute() {
 	  stats.numMemReads++;
           break;
         case STRR:
-          // need to implement
 	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write
 	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st.rm] * 4;
 	  dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
@@ -400,7 +400,6 @@ void execute() {
 	  stats.numMemWrites++;
           break;
         case LDRR:
-          // need to implement
 	  // 2 reg reads, 1 reg write, 1 mem read, 0 mem writes
 	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm] * 4;
 	  rf.write(rf[ld_st.instr.ld_st_reg.rt], dmem[addr]);
@@ -413,10 +412,9 @@ void execute() {
           // 2 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
           stats.numRegReads += 2;
 	  stats.numMemwrites++;
-	  addr = rf[ld_st.instr.ld_st_imm.rm] + ld_st.instr.ld_st_imm.imm;
-	  word = dmem[addr];
-	  // floor word address to get mask, apply that to the address to get
-	  // just the last couple bits for ubyte index(remember its inverted in data_ubyte)
+	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
+	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
+	  set_data_ubyte4(dmem[addr] & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value stored in rt
           break;
         case LDRBI:
           // need to implement
@@ -424,10 +422,17 @@ void execute() {
 	  stats.numRegReads++;
 	  stats.numRegWrites++;
 	  stats.numMemReads++;
+	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
+	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
+	  rf.write(ld_st.instr.ld_st_imm.rt, temp.data_ubyte4(dmem[addr] & 3)); 
+	  // get the data at the given word address and byte index and write it to the destination reg
           break;
         case STRBR:
           // need to implement
 	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
+	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
+	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
+	  set_data_ubyte4(dmem[addr] & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value stored in rt
 	  stats.numRegReads += 3;
 	  stats.numMemWrites++;
           break;
@@ -437,6 +442,9 @@ void execute() {
 	  stats.numRegReads += 2;
 	  stats.numRegWrites++;
 	  stats.numMemReads++;
+	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm]; // calculate address
+	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
+	  rf.write(ld_st.instr.ld_st_imm.rt, temp.data_ubyte4(dmem[addr] & 3)); 
           break;
       }
       break;
@@ -471,7 +479,8 @@ void execute() {
       decode(cond);
       // Once you've completed the checkCondition function,
       // this should work for all your conditional branches.
-      // needs stats
+      // 1 reg write
+      stats.numRegWrites++;
       if (checkCondition(cond.instr.b.cond)){
         rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
       }
@@ -479,7 +488,9 @@ void execute() {
     case UNCOND:
       // Essentially the same as the conditional branches, but with no
       // condition check, and an 11-bit immediate field
+      // 1 reg write
       decode(uncond);
+      rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
       break;
     case LDM:
       decode(ldm);
@@ -511,7 +522,7 @@ void execute() {
       stats.numMemReads++;
       break;
     case ADD_SP:
-      // needs stats
+      // 1 reg write, 1 reg read, no mem access
       decode(addsp);
       rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm*4));
       break;
