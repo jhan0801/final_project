@@ -251,7 +251,7 @@ void execute() {
   itype = decode(ALL_Types(instr));
 
   // CPE 315: The bulk of your work is in the following switch statement
-  // All instructions will need to have stats and cache access info added
+  // All instructions will need to have stats and caches access info added
   // as appropriate for that instruction.
   switch(itype) {
     case ALU:
@@ -393,7 +393,7 @@ void execute() {
 	  stats.numRegReads += 2;
 	  stats.numRegWrites++;
 	  stats.numMemReads++;
-	  cache.access(addr);
+	  caches.access(addr);
           break;
         case LDRI:
 	  // 1 reg reads, 1 reg writes, 1 mem read, 0 mem writes
@@ -402,7 +402,7 @@ void execute() {
 	  stats.numRegReads++;
 	  stats.numRegWrites++;
 	  stats.numMemReads++;
-	  cache.access(addr);
+	  caches.access(addr);
           break;
         case STRR:
 	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write
@@ -410,7 +410,7 @@ void execute() {
 	  dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
 	  stats.numRegReads += 3;
 	  stats.numMemWrites++;
-	  cache.access(addr);
+	  caches.access(addr);
           break;
         case LDRR:
 	  // 2 reg reads, 1 reg write, 1 mem read, 0 mem writes
@@ -419,7 +419,7 @@ void execute() {
 	  stats.numRegReads += 2;
 	  stats.numRegWrites++;
 	  stats.numMemReads++;
-	  cache.access(addr);
+	  caches.access(addr);
           break;
         case STRBI:
           // need to implement
@@ -427,7 +427,7 @@ void execute() {
           stats.numRegReads += 2;
 	  stats.numMemWrites++;
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
-	  cache.access(addr);
+	  caches.access(addr);
 	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
 	  temp.set_data_ubyte4(dmem[addr] & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
           break;
@@ -438,7 +438,7 @@ void execute() {
 	  stats.numRegWrites++;
 	  stats.numMemReads++;
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
-	  cache.access(addr);
+	  caches.access(addr);
 	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
 	  rf.write(ld_st.instr.ld_st_imm.rt, temp.data_ubyte4(dmem[addr] & 3));
 	  // get the data at the given word address and byte index and write it to the destination reg
@@ -451,7 +451,7 @@ void execute() {
 	  temp.set_data_ubyte4(dmem[addr] & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
 	  stats.numRegReads += 3;
 	  stats.numMemWrites++;
-	  cache.access(addr);
+	  caches.access(addr);
           break;
         case LDRBR:
           // need to implement
@@ -462,7 +462,7 @@ void execute() {
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm]; // calculate address
 	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
 	  rf.write(ld_st.instr.ld_st_imm.rt, temp.data_ubyte4(dmem[addr] & 3));
-	  cache.access(addr);
+	  caches.access(addr);
           break;
       }
       break;
