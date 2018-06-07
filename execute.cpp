@@ -485,11 +485,12 @@ void execute() {
              for (int i = 0; i < 8; i++) {
                 if (temp & 1) {
                    dmem.wrtie(addr, rf[i]);
-                   addr -= 4;
+                   addr += 4;
                 }
                 temp >>= 1;
              }
           }
+          cache.access(addr);
           break;
         case MISC_POP:
           if (misc.reg_list != 0) {
@@ -506,6 +507,7 @@ void execute() {
           if (misc.m = 1) {
              rf.write(addr, PC_REG);
           }
+          cache.access(addr);
 
           break;
         case MISC_SUB:
@@ -544,6 +546,7 @@ void execute() {
     case LDM:
       decode(ldm);
       // need to implement
+
       break;
     case STM:
       decode(stm);

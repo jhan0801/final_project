@@ -92,7 +92,7 @@ ALU_Ops decode (const ALU_Type data) {
   else if (data.instr.subr.op == ALU_SUBR_OP) {
     // 315: insert code here to print subs instruction
     if (opts.instrs)
-      cout << "subs r" << data.isntr.subr.rd << ", r" << data.instr.subr.rn << ", r" << data.instr.subr.rm << endl;
+      cout << "subs r" << data.instr.subr.rd << ", r" << data.instr.subr.rn << ", r" << data.instr.subr.rm << endl;
     return ALU_SUBR;
   }
   else if (data.instr.add3i.op == ALU_ADD3I_OP) {
@@ -180,8 +180,8 @@ SP_Ops decode (const SP_Type data) {
   }
   else if (data.instr.add.op == 0) {
     // Here you'll need to SP_ADD similar to above
-    if (opts.instr)
-      cout << "add sp, sp"
+    // if (opts.instr)
+    //   cout << "add sp, sp"
     return SP_ADD;
   }
   else if (data.instr.cmp.op == 1) {
