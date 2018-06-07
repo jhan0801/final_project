@@ -77,25 +77,9 @@ struct ALU_ADDR_Instr {
    unsigned short type: 2;
 };
 
-struct ALU_SUBR_Instr {
-   unsigned short rd: 3;
-   unsigned short rn: 3;
-   unsigned short rm: 3;
-   unsigned short op: 5;
-   unsigned short type: 2;
-}
-
 typedef ALU_ADDR_Instr ALU_SUBR_Instr;
 
 struct ALU_ADD3I_Instr {
-   unsigned short rd: 3;
-   unsigned short rn: 3;
-   unsigned short imm: 3;
-   unsigned short op: 5;
-   unsigned short type: 2;
-};
-
-struct ALU_SUB3I_Instr {
    unsigned short rd: 3;
    unsigned short rn: 3;
    unsigned short imm: 3;
@@ -112,12 +96,6 @@ struct ALU_ADD8I_Instr {
    unsigned short type: 2;
 };
 
-struct ALU_SUB8I_Instr {
-   unsigned short imm: 8;
-   unsigned short rdn: 3;
-   unsigned short op: 3;
-   unsigned short type: 2;
-};
 
 typedef ALU_ADD8I_Instr ALU_SUB8I_Instr;
 typedef ALU_ADD8I_Instr ALU_CMP8I_Instr;

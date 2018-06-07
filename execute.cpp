@@ -1,6 +1,6 @@
 #include "thumbsim.hpp"
 // These are just the register NUMBERS
-#define PC_REG 15  
+#define PC_REG 15
 #define LR_REG 14
 #define SP_REG 13
 
@@ -56,7 +56,7 @@ void setNegZero(int num){
 	else{
 		flags.N = 0;
 	}
-	
+
 }
 
 // This function is complete, you should not have to modify it
@@ -117,7 +117,7 @@ void setCarryOverflow (int num1, int num2, OFType oftype) {
   }
 }
 
-// CPE 315: You're given the code for evaluating BEQ, and you'll need to 
+// CPE 315: You're given the code for evaluating BEQ, and you'll need to
 // complete the rest of these conditions. See Page 208 of the armv7 manual
 static int checkCondition(unsigned short cond) {
   switch(cond) {
@@ -304,7 +304,7 @@ void execute() {
           break;
       }
       break;
-    case BL: 
+    case BL:
       // This instruction is complete, nothing needed here
       bl_ops = decode(blupper);
       if (bl_ops == BL_UPPER) {
@@ -312,7 +312,7 @@ void execute() {
         instr2 = imem[PC];
         BL_Type bllower(instr2);
         if (blupper.instr.bl_upper.s) {
-          addr = static_cast<unsigned int>(0xff<<24) | 
+          addr = static_cast<unsigned int>(0xff<<24) |
             ((~(bllower.instr.bl_lower.j1 ^ blupper.instr.bl_upper.s))<<23) |
             ((~(bllower.instr.bl_lower.j2 ^ blupper.instr.bl_upper.s))<<22) |
             ((blupper.instr.bl_upper.imm10)<<12) |
@@ -328,7 +328,7 @@ void execute() {
         rf.write(PC_REG, PC + 2 + addr);
 
         stats.numRegReads += 1;
-        stats.numRegWrites += 2; 
+        stats.numRegWrites += 2;
       }
       else {
         cerr << "Bad BL format." << endl;
@@ -378,9 +378,9 @@ void execute() {
 	  // 2 reg reads, 1 reg write, 0 mem reads, 1 mem write
           addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
-	  stats.numRegReads += 2;
-	  stats.numRegWrites++;
-	  stats.numMemReads++;
+   	  stats.numRegReads += 2;
+   	  stats.numRegWrites++;
+   	  stats.numMemReads++;
           break;
         case LDRI:
           // functionally complete, needs stats
@@ -445,8 +445,11 @@ void execute() {
       switch(misc_ops) {
         case MISC_PUSH:
           // need to implement
-	  // 1 reg read, 1 reg write
-	  rf.write(SP_REG, SP - (
+          if (misc.m == 1)
+            rf.write(SP_REG, LR);
+          if (misc.reg_list != 0)
+	       // 1 reg read, 1 reg write
+	       rf.write(SP_REG, );
           break;
         case MISC_POP:
           // need to implement

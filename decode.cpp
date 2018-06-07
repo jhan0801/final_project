@@ -180,6 +180,8 @@ SP_Ops decode (const SP_Type data) {
   }
   else if (data.instr.add.op == 0) {
     // Here you'll need to SP_ADD similar to above
+    if (opts.instr)
+      cout << "add sp, sp"
     return SP_ADD;
   }
   else if (data.instr.cmp.op == 1) {
