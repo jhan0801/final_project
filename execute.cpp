@@ -12,6 +12,18 @@
 Stats stats;
 Caches caches(0);
 
+unsigned int bitCount(unsigned short regList) {
+   constexpr int cmp = 1;
+   int cnt = 0;
+
+   for (int i = 0; i < 8; i++) {
+      if ((regList & cmp) == cmp)
+         cnt++;
+      regList >>= 1;
+   }
+   return cnt;
+}
+
 // CPE 315: you'll need to implement a custom sign-extension function
 // in addition to the ones given below, specifically for the unconditional
 // branch instruction, which has an 11-bit immediate field
@@ -453,14 +465,40 @@ void execute() {
       switch(misc_ops) {
         case MISC_PUSH:
           // need to implement
-          if (misc.m == 1)
-            rf.write(SP_REG, LR);
-          if (misc.reg_list != 0)
-	       // 1 reg read, 1 reg write
-	       rf.write(SP_REG, );
+
+          if (misc.m == 1) {
+            addr = SP - 4;
+            dmem.write(addr, LR);
+         }
+
+          if (misc.reg_list != 0) {
+             addr -= (4 * bitCount(misc.reg_list));
+             unsigned short temp = misc.reg_list;
+             for (int i = 0; i < 8; i++) {
+                if (temp & 1) {
+                   dmem.wrtie(addr, rf[i]);
+                   addr -= 4;
+                }
+                temp >>= 1;
+             }
+          }
           break;
         case MISC_POP:
-          // need to implement
+          if (misc.reg_list != 0) {
+             addr = SP - (4 * bitCount(misc.reg_list));
+             unsigned short temp = misc.reg_list;
+             for (int i = 0; i < 8; i++) {
+                if (temp & 1) {
+                   rf.write(addr, rf[i]);
+                   addr  += 4;
+                }
+                temp >>= 1;
+             }
+          }
+          if (misc.m = 1) {
+             rf.write(addr, PC_REG);
+          }
+
           break;
         case MISC_SUB:
           // functionally complete, needs stats
