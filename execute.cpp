@@ -13,11 +13,11 @@ Stats stats;
 Caches caches(0);
 
 unsigned int bitCount(unsigned short regList) {
-   constexpr int cmp = 1;
+   const int cmp = 1;
    int cnt = 0;
 
    for (int i = 0; i < 8; i++) {
-      if ((regList & cmp) == cmp)
+      if (regList & cmp)
          cnt++;
       regList >>= 1;
    }
