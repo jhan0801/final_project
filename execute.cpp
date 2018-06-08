@@ -289,7 +289,7 @@ void execute() {
           // N, Z, C, V flags set, reg reads and writes each incremented, no mem access
           stats.numRegReads += 1;
 	       stats.numRegWrites += 1;
-	       setCarryOverflow(rf[alu.instr.add3i.rn], rf[alu.instr.add3i.rm], OF_ADD);
+	       setCarryOverflow(rf[alu.instr.add3i.rn], alu.instr.add3i.imm, OF_ADD);
 	       setNegZero(rf[alu.instr.add3i.rn] + rf[alu.instr.add3i.imm]);
           rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);
           break;
@@ -297,7 +297,7 @@ void execute() {
    	  // N, Z, C, V flags set, reg reads and writes incremented, no mem access
    	    stats.numRegReads += 1;
    	    stats.numRegWrites += 1;
-   	    setCarryOverflow(rf[alu.instr.sub3i.rn], rf[alu.instr.sub3i.rm], OF_SUB);
+   	    setCarryOverflow(rf[alu.instr.sub3i.rn], alu.instr.sub3i.imm, OF_SUB);
    	    setNegZero(rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
    	    rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
           break;
