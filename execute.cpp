@@ -261,18 +261,25 @@ void execute() {
       add_ops = decode(alu);
       switch(add_ops) {
         case ALU_LSLI:
+          // lsls r2, r2, #2
+          // 1 reg read, 1 reg write
+          setCarryOverflow(rf[alu.instr.lsli.rm], alu.instr.lsli.imm, OF_SHIFT);
+          setNegZero(rf[alu.instr.lsli.rm] << alu.instr.lsli.rm);
+          stats.numRegReads++;
+          stats.numRegWrites++;
+          rf.write(alu.instr.lsli.rd, rf[alu.instr.lsli.rm] << alu.instr.lsli.rm);
           break;
         case ALU_ADDR:
           // N, Z, C, V flags set, 2 reg reads, 1 reg write, no mem access
-      	  setCarryOverflow(rf[alu.instr.addr.rn], rf[alu.instr.addr.rn], OF_ADD);
+      	  setCarryOverflow(rf[alu.instr.addr.rn], rf[alu.instr.addr.rm], OF_ADD);
       	  setNegZero(rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
-          stats.numRegReads += 2;
-	  stats.numRegWrites += 1;
+           stats.numRegReads += 2;
+	        stats.numRegWrites += 1;
           rf.write(alu.instr.addr.rd, rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
           break;
         case ALU_SUBR:
       	  // N, Z, C, V flags set, reg reads + 2, writes + 1, no mem access
-      	  setCarryOverflow(rf[alu.instr.subr.rn], rf[alu.instr.subr.rn], OF_SUB);
+      	  setCarryOverflow(rf[alu.instr.subr.rn], rf[alu.instr.subr.rm], OF_SUB);
       	  setNegZero(rf[alu.instr.subr.rn] - rf[alu.instr.subr.rm]);
       	  stats.numRegReads += 2;
       	  stats.numRegWrites += 1;
@@ -281,24 +288,24 @@ void execute() {
         case ALU_ADD3I:
           // N, Z, C, V flags set, reg reads and writes each incremented, no mem access
           stats.numRegReads += 1;
-	  stats.numRegWrites += 1;
-	  setCarryOverflow(rf[alu.instr.add3i.rn], rf[alu.instr.add3i.rn], OF_ADD);
-	  setNegZero(rf[alu.instr.add3i.rn] + rf[alu.instr.add3i.imm]);
+	       stats.numRegWrites += 1;
+	       setCarryOverflow(rf[alu.instr.add3i.rn], rf[alu.instr.add3i.rm], OF_ADD);
+	       setNegZero(rf[alu.instr.add3i.rn] + rf[alu.instr.add3i.imm]);
           rf.write(alu.instr.add3i.rd, rf[alu.instr.add3i.rn] + alu.instr.add3i.imm);
           break;
         case ALU_SUB3I:
-	  // N, Z, C, V flags set, reg reads and writes incremented, no mem access
-	  stats.numRegReads += 1;
-	  stats.numRegWrites += 1;
-	  setCarryOverflow(rf[alu.instr.sub3i.rn], rf[alu.instr.sub3i.rn], OF_SUB);
-	  setNegZero(rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
-	  rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
+   	  // N, Z, C, V flags set, reg reads and writes incremented, no mem access
+   	    stats.numRegReads += 1;
+   	    stats.numRegWrites += 1;
+   	    setCarryOverflow(rf[alu.instr.sub3i.rn], rf[alu.instr.sub3i.rm], OF_SUB);
+   	    setNegZero(rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
+   	    rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
           break;
         case ALU_MOV:
           // 1 reg read, 1 reg write, no mem access, N, Z flags set
-	  setNegZero(rf[alu.instr.mov.rdn]);
+	       setNegZero(rf[alu.instr.mov.rdn]);
           stats.numRegReads += 1;
-	  stats.numRegWrites += 1;
+	       stats.numRegWrites += 1;
           rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
           break;
         case ALU_CMP:
@@ -492,8 +499,8 @@ void execute() {
                 if (tmp & 1) {
                    dmem.write(addr, rf[i]);
                    addr += 4;
-		   stats.numMemWrites++;
-		   stats.numRegReads++;
+		             stats.numMemWrites++;
+		             stats.numRegReads++;
                 }
                 tmp >>= 1;
              }
@@ -507,8 +514,8 @@ void execute() {
                 if (tmp & 1) {
                    rf.write(i, dmem[addr]);
                    addr += 4;
-		   stats.numMemReads++;
-		   stats.numRegWrites++;
+		             stats.numMemReads++;
+		             stats.numRegWrites++;
                 }
                 tmp >>= 1;
              }
@@ -575,8 +582,8 @@ void execute() {
             if (tmp & 1) {
                rf.write(rf[i], dmem[addr]);
                addr += 4;
-	       stats.numMemReads++;
-	       stats.numRegWrites++;
+	            stats.numMemReads++;
+	            stats.numRegWrites++;
             }
             tmp >>= 1;
          }
