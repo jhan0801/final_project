@@ -433,13 +433,13 @@ void execute() {
         case STRBI:
           // need to implement
           // 2 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
-<<<<<<< HEAD
           stats.numRegReads += 2;
 	  stats.numMemWrites++;
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
 	  caches.access(addr);
-	  temp = dmem[addr & !3]; // get everything but the byte index (up until the last 2 bits)
+	  temp = dmem[addr]; // get everything but the byte index (up until the last 2 bits)
 	  temp.set_data_ubyte4(addr & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
+    dmem[addr] = temp;
           break;
         case LDRBI:
           // need to implement
@@ -449,18 +449,17 @@ void execute() {
 	  stats.numMemReads++;
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
 	  caches.access(addr);
-	  word_addr = addr & 3;
-	  byte_index = addr & !3;
-	  val = signExtend8to32ui(dmem[word_addr].data_ubyte4(byte_index));
+	  val = signExtend8to32ui(dmem[addr].data_ubyte4(addr & 3));
 	  rf.write(ld_st.instr.ld_st_imm.rt, val);
           break;
         case STRBR:
           // need to implement
 	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
-	  temp = dmem[addr & !3]; // get everything but the byte index (up until the last 2 bits)
+	  temp = dmem[addr]; // get everything but the byte index (up until the last 2 bits)
 	  temp.set_data_ubyte4(addr & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
-	  stats.numRegReads += 3;
+    dmem[addr] = temp;
+    stats.numRegReads += 3;
 	  stats.numMemWrites++;
 	  caches.access(addr);
           break;
@@ -471,54 +470,10 @@ void execute() {
 	  stats.numRegWrites++;
 	  stats.numMemReads++;
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm]; // calculate address
-	  word_addr = addr & 3;
-	  byte_index = addr & !3;
-	  val = signExtend8to32ui(dmem[word_addr].data_ubyte4(byte_index));
+	  val = signExtend8to32ui(dmem[addr].data_ubyte4(add & 3));
 	  rf.write(ld_st.instr.ld_st_imm.rt, val);
 	  caches.access(addr);
           break;
-=======
-           stats.numRegReads += 2;
-      	  stats.numMemWrites++;
-      	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
-      	  caches.access(addr);
-      	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
-      	  temp.set_data_ubyte4(dmem[addr] & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
-          break;
-        case LDRBI:
-           // need to implement
-      	  // 1 reg read, 1 reg write, 1 mem read, 0 mem writes, no flag updates
-      	  stats.numRegReads++;
-      	  stats.numRegWrites++;
-      	  stats.numMemReads++;
-      	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
-      	  caches.access(addr);
-      	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
-      	  rf.write(ld_st.instr.ld_st_imm.rt, temp.data_ubyte4(dmem[addr] & 3));
-      	  // get the data at the given word address and byte index and write it to the destination reg
-          break;
-        case STRBR:
-           // need to implement
-      	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
-      	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
-      	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
-      	  temp.set_data_ubyte4(dmem[addr] & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
-      	  stats.numRegReads += 3;
-      	  stats.numMemWrites++;
-      	  caches.access(addr);
-          break;
-        case LDRBR:
-           // need to implement
-      	  // 2 reg reads, 1 reg write, 1 mem read, 0 mem writes, no flag updates
-      	  stats.numRegReads += 2;
-      	  stats.numRegWrites++;
-      	  stats.numMemReads++;
-      	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm]; // calculate address
-      	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
-      	  rf.write(ld_st.instr.ld_st_imm.rt, temp.data_ubyte4(dmem[addr] & 3));
-      	  caches.access(addr);
-           break;
->>>>>>> 9123c6cf0903937b960f2886a6f442b25fd80863
       }
       break;
     case MISC:
