@@ -261,6 +261,13 @@ void execute() {
       add_ops = decode(alu);
       switch(add_ops) {
         case ALU_LSLI:
+          // lsls r2, r2, #2
+          // 1 reg read, 1 reg write
+          setCarryOverflow(rf[alu.instr.lsli.rm], alu.instr.lsli.imm, OF_SHIFT);
+          setNegZero(rf[alu.instr.lsli.rm] << alu.instr.lsli.imm);
+          stats.numRegReads++;
+          stats.numRegWrites++;
+          rf.write(alu.instr.lsli.rd, rf[alu.instr.lsli.rm] << alu.instr.lsli.imm);
           break;
         case ALU_ADDR:
           // N, Z, C, V flags set, 2 reg reads, 1 reg write, no mem access
@@ -318,7 +325,7 @@ void execute() {
         case ALU_SUB8I:
           // 1 reg read, 1 reg write, no mem access, N, Z, C, V flags set
           setNegZero(rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
-          setCarryOverflow(rf[alu.instr.sub8i.rdn], alu.instr.sub8i.imm, OF_ADD);
+          setCarryOverflow(rf[alu.instr.sub8i.rdn], alu.instr.sub8i.imm, OF_SUB);
           rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
 	  stats.numRegReads++;
 	  stats.numRegWrites++;
@@ -389,7 +396,7 @@ void execute() {
       	 // 2 reg reads, 0 reg writes, no mem access, N, Z, C, V flags set
       	 stats.numRegReads += 2;
          setNegZero(((sp.instr.cmp.d << 3) | rf[sp.instr.cmp.rd]) - rf[sp.instr.cmp.rm]);
-	 setCarryOverflow(sp.instr.cmp.d << 3 | rf[sp.instr.cmp.rd], rf[sp.instr.cmp.rm], OF_SUB);
+	      setCarryOverflow(sp.instr.cmp.d << 3 | rf[sp.instr.cmp.rd], rf[sp.instr.cmp.rm], OF_SUB);
          break;
       }
       break;
