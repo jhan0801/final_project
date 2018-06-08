@@ -645,6 +645,8 @@ void execute() {
     case ADD_SP:
       // 1 reg write, 1 reg read, no mem access
       decode(addsp);
+      stats.numRegWrites++;
+      stats.numRegReads++;
       rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm*4));
       break;
     default:
