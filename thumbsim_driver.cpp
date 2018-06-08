@@ -110,16 +110,14 @@ void Memory<Data32, Data32>::dump(DataType dt) const {
 // "misses" counters.
 bool Cache::access(unsigned int address) {
   // complete
-  int byte_bites, block_bits, tag_bits;
-  unsigned int block_index;
+  unsigned int block_index, tag, byte_bits, block_bits;
   byte_bits = log2(blocksize);
   block_bits = log2(size);
-  tag_bits = 32 - (byte_bits + block_bits);
   // isolate the block index by getting rid of the tag and then the byte index
-  block_index  = (address & (exp2(block_bits + byte_bits) - 1)) & !(exp2(byte_bits) - 1);
+  block_index  = (address & ((unsigned int)exp2(block_bits + byte_bits) - 1)) & !(unsigned int)(exp2(byte_bits) - 1);
   block_index = block_index >> byte_bits;
   // isolate the block index by getting rid of everything else
-  tag = address & !(exp2(byte_bits + block_bits) - 1);
+  tag = address & !(unsigned int)(exp2(byte_bits + block_bits) - 1);
   tag = tag >> (block_bits + byte_bits);
   if(entries[block_index] == tag){
     hits++;
