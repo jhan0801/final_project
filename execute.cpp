@@ -381,10 +381,10 @@ void execute() {
          rf.write((sp.instr.mov.d << 3 ) | sp.instr.mov.rd, rf[sp.instr.mov.rm]);
          break;
         case SP_ADD:
-   	  // 2 reg reads, 1 reg write, no mem access
-   	  rf.write((sp.instr.add.d << 3) | sp.instr.add.rd, rf[sp.instr.add.rd] + rf[sp.instr.add.rm]);
-   	  stats.numRegReads += 2;
-   	  stats.numRegWrites++;
+   	 // 2 reg reads, 1 reg write, no mem access
+         rf.write((sp.instr.add.d << 3) | sp.instr.add.rd, rf[sp.instr.add.rd] + rf[sp.instr.add.rm]);
+ 	 stats.numRegReads += 2;
+   	 stats.numRegWrites++;
         case SP_CMP:
       	 // 2 reg reads, 0 reg writes, no mem access, N, Z, C, V flags set
       	 stats.numRegReads += 2;
@@ -483,10 +483,15 @@ void execute() {
             addr = SP - 4;
             dmem.write(addr, LR);
             rf.write(SP_REG, SP - 4);
+	    stats.numMemWrites++;
+	    stats.numRegWrites++;
+	    stats.numRegReads += 2;
           }
           if (misc.instr.push.reg_list != 0) {
              addr -= (4 * bitCount(misc.instr.push.reg_list));
              rf.write(SP_REG, SP - 4*bitCount(misc.instr.push.reg_list));
+	     stats.numRegReads++;
+	     stats.numRegWrites++;
              unsigned short tmp = misc.instr.push.reg_list;
              for (int i = 0; i < 8; i++) {
                 if (tmp & 1) {
@@ -513,10 +518,15 @@ void execute() {
                 tmp >>= 1;
              }
              rf.write(SP_REG, SP + 4*bitCount(misc.instr.push.reg_list));
+	     stats.numRegReads++;
+	     stats.numRegWrites++;
           }
           if (misc.instr.pop.m == 1) {
             rf.write(PC_REG, dmem[addr]);
             rf.write(SP_REG, SP + 4);
+	    stats.numRegWrites += 2;
+	    stats.numMemReads++;
+	    stats.numRegReads++;
           }
           break;
         case MISC_SUB:
@@ -537,8 +547,7 @@ void execute() {
       decode(cond);
       // Once you've completed the checkCondition function,
       // this should work for all your conditional branches.
-      // 1 reg write
-      stats.numRegWrites++;
+      stats.instrs++;
       if (checkCondition(cond.instr.b.cond)){
         rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
 	if((cond.instr.b.imm & (unsigned int)exp2(7)) != 0){
@@ -547,6 +556,8 @@ void execute() {
 	else{
 	  stats.numForwardBranchesTaken++;
 	}
+	stats.numRegWrites++;
+	stats.numRegReads++;
       }
       else{
         if((cond.instr.b.imm & (unsigned int)exp2(7)) != 0){
@@ -570,6 +581,7 @@ void execute() {
       // need to implement
       if (ldm.instr.ldm.reg_list != 0) {
          addr = rf[ldm.instr.ldm.rn] - (4*bitCount(ldm.instr.ldm.reg_list));
+	 stats.numRegReads;
          unsigned short tmp = ldm.instr.ldm.reg_list;
          for (int i = 0; i < 8; i++) {
             if (tmp & 1) {
@@ -588,6 +600,7 @@ void execute() {
       // need to implement
       if (stm.instr.stm.reg_list != 0) {
          addr = rf[stm.instr.stm.rn] - (4*bitCount(stm.instr.stm.reg_list));
+	 stats.numRegReads++;
          unsigned short tmp = stm.instr.stm.reg_list;
          for (int i = 0; i < 8; i++) {
             if (tmp & 1) {
@@ -614,7 +627,6 @@ void execute() {
       // Requires two consecutive imem locations pieced together
       temp = imem[addr] | (imem[addr+2]<<16);  // temp is a Data32
       rf.write(ldrl.instr.ldrl.rt, temp);
-
       // One write for updated reg
       stats.numRegWrites++;
       // One read of the PC
