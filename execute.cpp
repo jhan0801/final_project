@@ -475,9 +475,10 @@ void execute() {
           if (misc.instr.push.m == 1) {
             addr = SP - 4;
             dmem.write(addr, LR);
+            SP = SP - 4;
           }
           if (misc.instr.push.reg_list != 0) {
-             addr -= (4 * bitCount(misc.instr.push.reg_list));
+             addr = SP - (4 * bitCount(misc.instr.push.reg_list));
              unsigned short tmp = misc.instr.push.reg_list;
              for (int i = 0; i < 8; i++) {
                 if (tmp & 1) {
@@ -486,23 +487,25 @@ void execute() {
                 }
                 tmp >>= 1;
              }
+             SP = SP - (4*bitCount(misc.instr.push.reg_list));
           }
           break;
         case MISC_POP:
-           if (misc.instr.pop.m == 1) {
-             addr = SP - 4;
-             rf.write(addr, PC);
-           }
           if (misc.instr.pop.reg_list != 0) {
-             addr -= (4 * bitCount(misc.instr.pop.reg_list));
+             //addr = SP + (4 * bitCount(misc.instr.pop.reg_list));
              unsigned short tmp = misc.instr.pop.reg_list;
              for (int i = 0; i < 8; i++) {
                 if (tmp & 1) {
-                   rf.write(addr, rf[i]);
-                   addr += 4;
+                   rf.write(SP, rf[i]);
+                   SP += 4;
                 }
                 tmp >>= 1;
              }
+          }
+          if (misc.instr.pop.m == 1) {
+            addr = SP + 4;
+            rf.write(addr, PC);
+            SP += 4;
           }
           break;
         case MISC_SUB:
