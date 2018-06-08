@@ -243,14 +243,14 @@ LD_ST_Ops decode (const LD_ST_Type data) {
     if (data.instr.ld_st_imm.op == LD_ST_LDB) {
       // 315: write code to print ldrb
       if (opts.instrs) {
-         cout << "ldrb r" << data.instr.ld_st_reg.rt << " [r" << data.instr.ld_st_reg.rn << ", #" << setbase(10) << (data.instr.ld_st_reg.imm*4) << "]" << endl;
+         cout << "ldrb r" << data.instr.ld_st_reg.rt << " [r" << data.instr.ld_st_reg.rn << ", #" << setbase(10) << (data.instr.ld_st_imm.imm*4) << "]" << endl;
       }
       return LDRBI;
     }
     else if (data.instr.ld_st_imm.op == LD_ST_STB) {
       // 315: write code to print strb
       if (opts.instrs) {
-         cout << "strb r" << data.instr.ld_st_reg.rt << " [r" << data.instr.ld_st_reg.rn << ", #" << setbase(10) << (data.instr.ld_st_reg.imm*4) << "]" << endl;
+         cout << "strb r" << data.instr.ld_st_reg.rt << " [r" << data.instr.ld_st_reg.rn << ", #" << setbase(10) << (data.instr.ld_st_imm.imm*4) << "]" << endl;
       }
       return STRBI;
     }
