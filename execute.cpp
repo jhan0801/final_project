@@ -438,7 +438,7 @@ void execute() {
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
 	  caches.access(addr);
 	  temp = dmem[addr]; // get everything but the byte index (up until the last 2 bits)
-	  temp.set_data_ubyte4(addr & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
+	  temp.set_data_ubyte4(3 - (addr & 3), rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
     dmem.write(addr, temp);
           break;
         case LDRBI:
@@ -449,7 +449,7 @@ void execute() {
 	  stats.numMemReads++;
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
 	  caches.access(addr);
-	  val = signExtend8to32ui(dmem[addr].data_ubyte4(addr & 3));
+	  val = signExtend8to32ui(dmem[addr].data_ubyte4((addr & 3)));
 	  rf.write(ld_st.instr.ld_st_imm.rt, val);
           break;
         case STRBR:
@@ -457,7 +457,7 @@ void execute() {
 	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
 	  temp = dmem[addr]; // get everything but the byte index (up until the last 2 bits)
-	  temp.set_data_ubyte4(addr & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
+	  temp.set_data_ubyte4((addr & 3), rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
     dmem.write(addr, temp);
     stats.numRegReads += 3;
 	  stats.numMemWrites++;
@@ -470,7 +470,7 @@ void execute() {
 	  stats.numRegWrites++;
 	  stats.numMemReads++;
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm]; // calculate address
-	  val = signExtend8to32ui(dmem[addr].data_ubyte4(addr & 3));
+	  val = signExtend8to32ui(dmem[addr].data_ubyte4((addr & 3)));
 	  rf.write(ld_st.instr.ld_st_imm.rt, val);
 	  caches.access(addr);
           break;
