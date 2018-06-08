@@ -496,7 +496,7 @@ void execute() {
              unsigned short tmp = misc.instr.pop.reg_list;
              for (int i = 0; i < 8; i++) {
                 if (tmp & 1) {
-                   rf.write(rf[i], dmem[addr]);
+                   rf.write(i, dmem[addr]);
                    addr += 4;
                 }
                 tmp >>= 1;
