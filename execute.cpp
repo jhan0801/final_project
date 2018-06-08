@@ -491,7 +491,7 @@ void execute() {
         case MISC_POP:
            if (misc.instr.pop.m == 1) {
              addr = SP - 4;
-             rf.write(addr, PC_REG);
+             rf.write(addr, PC);
            }
           if (misc.instr.pop.reg_list != 0) {
              addr = SP - (4 * bitCount(misc.instr.pop.reg_list));
