@@ -474,14 +474,14 @@ void execute() {
         case MISC_PUSH:
           // need to implement
 
-          if (misc.m == 1) {
+          if (misc.instr.push.m == 1) {
             addr = SP - 4;
             dmem.write(addr, LR);
          }
 
-          if (misc.reg_list != 0) {
-             addr -= (4 * bitCount(misc.reg_list));
-             unsigned short temp = misc.reg_list;
+          if (misc.instr.push.reg_list != 0) {
+             addr -= (4 * bitCount(misc.instr.push.reg_list));
+             unsigned short temp = misc.instr.push.reg_list;
              for (int i = 0; i < 8; i++) {
                 if (temp & 1) {
                    dmem.wrtie(addr, rf[i]);
@@ -493,9 +493,9 @@ void execute() {
           cache.access(addr);
           break;
         case MISC_POP:
-          if (misc.reg_list != 0) {
-             addr = SP - (4 * bitCount(misc.reg_list));
-             unsigned short temp = misc.reg_list;
+          if (misc.instr.pop.reg_list != 0) {
+             addr = SP - (4 * bitCount(misc.instr.pop.reg_list));
+             unsigned short temp = misc.instr.pop.reg_list;
              for (int i = 0; i < 8; i++) {
                 if (temp & 1) {
                    rf.write(addr, rf[i]);
@@ -504,7 +504,7 @@ void execute() {
                 temp >>= 1;
              }
           }
-          if (misc.m = 1) {
+          if (misc.instr.pop.m = 1) {
              rf.write(addr, PC_REG);
           }
           cache.access(addr);
@@ -546,11 +546,35 @@ void execute() {
     case LDM:
       decode(ldm);
       // need to implement
+      if (ldm.instr.ldm.reg_list != 0) {
+         addr = rf[ldm.instr] - (4*bitCount(ldm.instr.ldm.reg_list));
+         unsigned short temp = ldm.instr.ldm.reg_list;
+         for (int i = 0; i < 8; i++) {
+            if (temp & 1) {
+               rf.write(addr, rf[i]);
+               addr += 4;
+            }
+            temp >>= 1;
+         }
+      }
+      cache.access(addr);
 
       break;
     case STM:
       decode(stm);
       // need to implement
+      if (stm.instr.stm.reg_list != 0) {
+         addr -= (4*bitCount(stm.instr.stm.reg_list));
+         unsigned short temp = stm.instr.stm.reg_list;
+         for (int i = 0; i < 8; i++) {
+            if (temp & 1) {
+               dmem.write(addr, rf[i]);
+               add += 4;
+            }
+            temp >>= 1;
+         }
+      }
+      cache.access(addr);
       break;
     case LDRL:
       // This instruction is complete, nothing needed
