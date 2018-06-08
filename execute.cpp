@@ -424,7 +424,7 @@ void execute() {
         case LDRR:
       	  // 2 reg reads, 1 reg write, 1 mem read, 0 mem writes
       	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm] * 4;
-      	  rf.write(rf[ld_st.instr.ld_st_reg.rt], dmem[addr]);
+      	  rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr]);
       	  stats.numRegReads += 2;
       	  stats.numRegWrites++;
       	  stats.numMemReads++;
@@ -439,7 +439,7 @@ void execute() {
 	  caches.access(addr);
 	  temp = dmem[addr]; // get everything but the byte index (up until the last 2 bits)
 	  temp.set_data_ubyte4(addr & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
-    dmem[addr] = temp;
+    dmem.write(addr, temp);
           break;
         case LDRBI:
           // need to implement
@@ -458,7 +458,7 @@ void execute() {
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
 	  temp = dmem[addr]; // get everything but the byte index (up until the last 2 bits)
 	  temp.set_data_ubyte4(addr & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
-    dmem[addr] = temp;
+    dmem.write(addr, temp);
     stats.numRegReads += 3;
 	  stats.numMemWrites++;
 	  caches.access(addr);
@@ -470,7 +470,7 @@ void execute() {
 	  stats.numRegWrites++;
 	  stats.numMemReads++;
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm]; // calculate address
-	  val = signExtend8to32ui(dmem[addr].data_ubyte4(add & 3));
+	  val = signExtend8to32ui(dmem[addr].data_ubyte4(addr & 3));
 	  rf.write(ld_st.instr.ld_st_imm.rt, val);
 	  caches.access(addr);
           break;
