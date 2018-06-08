@@ -504,7 +504,7 @@ void execute() {
           }
           if (misc.instr.pop.m == 1) {
             addr = SP - 4;
-            rf.write(addr, PC);
+            rf.write(addr, pc);
           }
           break;
         case MISC_SUB:
@@ -546,7 +546,7 @@ void execute() {
          unsigned short tmp = ldm.instr.ldm.reg_list;
          for (int i = 0; i < 8; i++) {
             if (tmp & 1) {
-               rf.write(addr, rf[i]);
+               rf.write(rf[i], dmem[addr]);
                addr += 4;
             }
             tmp >>= 1;
