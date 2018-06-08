@@ -267,7 +267,7 @@ void execute() {
           setNegZero(rf[alu.instr.lsli.rm] << alu.instr.lsli.rm);
           stats.numRegReads++;
           stats.numRegWrites++;
-          rf.write(alu.instr.lsli.rd, rf[alu.instr.lsli.rm] << alu.instr.lsli.rm);
+          rf.write(alu.instr.lsli.rd, rf[alu.instr.lsli.rm] << alu.instr.lsli.imm);
           break;
         case ALU_ADDR:
           // N, Z, C, V flags set, 2 reg reads, 1 reg write, no mem access
