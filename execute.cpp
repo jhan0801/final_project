@@ -392,12 +392,12 @@ void execute() {
       switch(ldst_ops) {
         case STRI:
 	  // 2 reg reads, 1 reg write, 0 mem reads, 1 mem write
-          addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
+          addr = rf[ld_st.instr.ld_st_imm.rn] + (ld_st.instr.ld_st_imm.imm * 4);
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
-	  stats.numRegReads += 2;
-	  stats.numRegWrites++;
-	  stats.numMemReads++;
-	  caches.access(addr);
+      	 stats.numRegReads += 2;
+      	 stats.numRegWrites++;
+      	 stats.numMemReads++;
+      	 caches.access(addr);
           break;
         case LDRI:
 	  // 1 reg reads, 1 reg writes, 1 mem read, 0 mem writes
@@ -475,13 +475,16 @@ void execute() {
       switch(misc_ops) {
         case MISC_PUSH:
           // need to implement
-
+          int cnt = 0;
           if (misc.instr.push.m == 1) {
             addr = SP - 4;
             dmem.write(addr, LR);
+            cnt += 4;
           }
           if (misc.instr.push.reg_list != 0) {
              addr -= (4 * bitCount(misc.instr.push.reg_list));
+             cnt += (4*bitCount(misc.instr.push.reg_list));
+             rf.write(SP_REG, SP - cnt);
              unsigned short tmp = misc.instr.push.reg_list;
              for (int i = 0; i < 8; i++) {
                 if (tmp & 1) {
@@ -493,23 +496,24 @@ void execute() {
           }
           break;
         case MISC_POP:
+          int cnt = 0;
           if (misc.instr.pop.reg_list != 0) {
-             addr -= (4 * bitCount(misc.instr.pop.reg_list));
-             if (misc.instr.pop.m == 1)
-               addr -= 4;
+             addr = SP;
              unsigned short tmp = misc.instr.pop.reg_list;
              for (int i = 0; i < 8; i++) {
                 if (tmp & 1) {
                    rf.write(i, dmem[addr]);
                    addr += 4;
+                   cnt += 4;
                 }
                 tmp >>= 1;
              }
           }
           if (misc.instr.pop.m == 1) {
-            addr = SP - 4;
             rf.write(PC_REG, dmem[addr]);
+            cnt += 4;
           }
+          rf.write(SP_REG, SP + cnt);
           break;
         case MISC_SUB:
 	  // 1 reg read, 1 reg write, no memory access, no flag updates
