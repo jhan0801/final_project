@@ -494,7 +494,7 @@ void execute() {
              rf.write(addr, PC);
            }
           if (misc.instr.pop.reg_list != 0) {
-             addr = SP - (4 * bitCount(misc.instr.pop.reg_list));
+             addr -= (4 * bitCount(misc.instr.pop.reg_list));
              unsigned short temp = misc.instr.pop.reg_list;
              for (int i = 0; i < 8; i++) {
                 if (temp & 1) {
