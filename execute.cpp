@@ -315,8 +315,8 @@ void execute() {
         case ALU_SUB8I:
           //N, Z, C, V flags set, 1 reg read, 1 reg write, no mem access
           setNegZero(rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
-          setCarryOVerflow(rf[alu.instr.sub8i.rdn], alu.instr.sub8i.imm, OF_ADD);
-          rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm)
+          setCarryOverflow(rf[alu.instr.sub8i.rdn], alu.instr.sub8i.imm, OF_ADD);
+          rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
           break;
         default:
           cout << "instruction not implemented" << endl;
@@ -479,16 +479,14 @@ void execute() {
       switch(misc_ops) {
         case MISC_PUSH:
           // need to implement
-          int cnt = 0;
           if (misc.instr.push.m == 1) {
             addr = SP - 4;
             dmem.write(addr, LR);
-            cnt += 4;
+            rf.write(SP_REG, SP - 4);
           }
           if (misc.instr.push.reg_list != 0) {
              addr -= (4 * bitCount(misc.instr.push.reg_list));
-             cnt += (4*bitCount(misc.instr.push.reg_list));
-             rf.write(SP_REG, SP - cnt);
+             rf.write(SP_REG, SP - 4*bitCount(misc.instr.push.reg_list));
              unsigned short tmp = misc.instr.push.reg_list;
              for (int i = 0; i < 8; i++) {
                 if (tmp & 1) {
@@ -500,7 +498,6 @@ void execute() {
           }
           break;
         case MISC_POP:
-          int cnt = 0;
           if (misc.instr.pop.reg_list != 0) {
              addr = SP;
              unsigned short tmp = misc.instr.pop.reg_list;
@@ -508,16 +505,15 @@ void execute() {
                 if (tmp & 1) {
                    rf.write(i, dmem[addr]);
                    addr += 4;
-                   cnt += 4;
                 }
                 tmp >>= 1;
              }
+             rf.write(SP_REG, SP + 4*bitCount(misc.instr.push.reg_list));
           }
           if (misc.instr.pop.m == 1) {
             rf.write(PC_REG, dmem[addr]);
-            cnt += 4;
+            rf.write(SP_REG, SP + 4);
           }
-          rf.write(SP_REG, SP + cnt);
           break;
         case MISC_SUB:
 	  // 1 reg read, 1 reg write, no memory access, no flag updates
