@@ -313,6 +313,10 @@ void execute() {
           rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
           break;
         case ALU_SUB8I:
+          //N, Z, C, V flags set, 1 reg read, 1 reg write, no mem access
+          setNegZero(rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
+          setCarryOVerflow(rf[alu.instr.sub8i.rdn], alu.instr.sub8i.imm, OF_ADD);
+          rf.write(alu.instr.sub8i.rdn, rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm)
           break;
         default:
           cout << "instruction not implemented" << endl;
