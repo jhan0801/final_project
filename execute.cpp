@@ -589,7 +589,7 @@ void execute() {
       // need to implement
       if (ldm.instr.ldm.reg_list != 0) {
          addr = rf[ldm.instr.ldm.rn] - (4*bitCount(ldm.instr.ldm.reg_list));
-	 stats.numRegReads;
+	 stats.numRegReads++;
          unsigned short tmp = ldm.instr.ldm.reg_list;
          for (int i = 0; i < 8; i++) {
             if (tmp & 1) {
@@ -645,6 +645,8 @@ void execute() {
     case ADD_SP:
       // 1 reg write, 1 reg read, no mem access
       decode(addsp);
+      stats.numRegWrites++;
+      stats.numRegReads++;
       rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm*4));
       break;
     default:
