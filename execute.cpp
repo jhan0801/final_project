@@ -288,7 +288,7 @@ void execute() {
 	  stats.numRegReads += 1;
 	  stats.numRegWrites += 1;
 	  setCarryOverflow(rf[alu.instr.sub3i.rn], rf[alu.instr.sub3i.rn], OF_SUB);
-	  setNegZero(rf[alu.instr.sub3i.rn] - rf[alu.instr.sub3i.imm]);
+	  setNegZero(rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
 	  rf.write(alu.instr.sub3i.rd, rf[alu.instr.sub3i.rn] - alu.instr.sub3i.imm);
           break;
         case ALU_MOV:
@@ -299,6 +299,10 @@ void execute() {
           rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
           break;
         case ALU_CMP:
+         // YOU MUSH IMPLEMENT THIS
+         stats.numRegRead += 2;
+         setNegZero(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
+         setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
           break;
         case ALU_ADD8I:
           // N, Z, C, V flags set, reg reads and writes each + 1, no mem access
