@@ -300,7 +300,7 @@ void execute() {
           break;
         case ALU_CMP:
          // YOU MUSH IMPLEMENT THIS
-         stats.numRegRead += 2;
+         stats.numRegReads += 2;
          setNegZero(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
          setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
           break;
