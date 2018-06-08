@@ -256,6 +256,7 @@ void execute() {
   // CPE 315: The bulk of your work is in the following switch statement
   // All instructions will need to have stats and caches access info added
   // as appropriate for that instruction.
+  stats.instrs++;
   switch(itype) {
     case ALU:
       add_ops = decode(alu);
@@ -396,7 +397,7 @@ void execute() {
       	 // 2 reg reads, 0 reg writes, no mem access, N, Z, C, V flags set
       	 stats.numRegReads += 2;
          setNegZero(((sp.instr.cmp.d << 3) | rf[sp.instr.cmp.rd]) - rf[sp.instr.cmp.rm]);
-	      setCarryOverflow(sp.instr.cmp.d << 3 | rf[sp.instr.cmp.rd], rf[sp.instr.cmp.rm], OF_SUB);
+	 setCarryOverflow(sp.instr.cmp.d << 3 | rf[sp.instr.cmp.rd], rf[sp.instr.cmp.rm], OF_SUB);
          break;
       }
       break;
@@ -544,8 +545,8 @@ void execute() {
            break;
         case MISC_ADD:
       	  // 1 reg read, 1 reg write, no memory access, no flag updates
-      	 stats.numRegReads++;
-      	 stats.numRegWrites++;
+      	  stats.numRegReads++;
+      	  stats.numRegWrites++;
           rf.write(SP_REG, SP + (misc.instr.add.imm*4));
           break;
       }
@@ -554,7 +555,6 @@ void execute() {
       decode(cond);
       // Once you've completed the checkCondition function,
       // this should work for all your conditional branches.
-      stats.instrs++;
       if (checkCondition(cond.instr.b.cond)){
         rf.write(PC_REG, PC + 2 * signExtend8to32ui(cond.instr.b.imm) + 2);
 	if((cond.instr.b.imm & (unsigned int)exp2(7)) != 0){
@@ -589,7 +589,7 @@ void execute() {
       // need to implement
       if (ldm.instr.ldm.reg_list != 0) {
          addr = rf[ldm.instr.ldm.rn] - (4*bitCount(ldm.instr.ldm.reg_list));
-	 stats.numRegReads;
+	 stats.numRegReads++;
          unsigned short tmp = ldm.instr.ldm.reg_list;
          for (int i = 0; i < 8; i++) {
             if (tmp & 1) {
