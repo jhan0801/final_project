@@ -501,7 +501,7 @@ void execute() {
                 temp >>= 1;
              }
           }
-          if (misc.instr.pop.m = 1) {
+          if (misc.instr.pop.m == 1) {
              rf.write(addr, PC_REG);
           }
           break;
@@ -540,7 +540,7 @@ void execute() {
       decode(ldm);
       // need to implement
       if (ldm.instr.ldm.reg_list != 0) {
-         addr = rf[ldm.instr] - (4*bitCount(ldm.instr.ldm.reg_list));
+         addr = rf[ldm.instr.ldm.rn] - (4*bitCount(ldm.instr.ldm.reg_list));
          unsigned short temp = ldm.instr.ldm.reg_list;
          for (int i = 0; i < 8; i++) {
             if (temp & 1) {
@@ -550,24 +550,24 @@ void execute() {
             temp >>= 1;
          }
       }
-      cache.access(addr);
+      caches.access(addr);
 
       break;
     case STM:
       decode(stm);
       // need to implement
       if (stm.instr.stm.reg_list != 0) {
-         addr -= (4*bitCount(stm.instr.stm.reg_list));
+         addr = rf[stm.instr.stm.rn] - (4*bitCount(stm.instr.stm.reg_list));
          unsigned short temp = stm.instr.stm.reg_list;
          for (int i = 0; i < 8; i++) {
             if (temp & 1) {
                dmem.write(addr, rf[i]);
-               add += 4;
+               addr += 4;
             }
             temp >>= 1;
          }
       }
-      cache.access(addr);
+      caches.access(addr);
       break;
     case LDRL:
       // This instruction is complete, nothing needed
