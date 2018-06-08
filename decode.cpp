@@ -199,28 +199,28 @@ LD_ST_Ops decode (const LD_ST_Type data) {
     if (data.instr.class_type.opB == LD_ST_OPB_LDRB) {
       // 315: write code to print ldrb
       if (opts.instrs) {
-         cout << "ldrb r" << data.instr.ld_st_reg.rt << " [r" << data.instr.ld_st_reg.rn << ", r" << data.instr.ld_st_reg.rm << "]" << endl;
+         cout << "ldrb r" << data.instr.ld_st_reg.rt << ", [r" << data.instr.ld_st_reg.rn << ", r" << data.instr.ld_st_reg.rm << "]" << endl;
       }
       return LDRBR;
     }
     else if (data.instr.class_type.opB == LD_ST_OPB_STRB) {
       // 315: write code to print strb
       if (opts.instrs) {
-         cout << "strb r" << data.instr.ld_st_reg.rt << " [r" << data.instr.ld_st_reg.rn << ", r" << data.instr.ld_st_reg.rm << "]" << endl;
+         cout << "strb r" << data.instr.ld_st_reg.rt << ", [r" << data.instr.ld_st_reg.rn << ", r" << data.instr.ld_st_reg.rm << "]" << endl;
       }
       return STRBR;
     }
     else if (data.instr.class_type.opB == LD_ST_OPB_LDR) {
       // 315: write code to print ldr
       if (opts.instrs) {
-         cout << "ldr r" << data.instr.ld_st_reg.rt << " [r" << data.instr.ld_st_reg.rn << ", r" << data.instr.ld_st_reg.rm << "]" << endl;
+         cout << "ldr r" << data.instr.ld_st_reg.rt << ", [r" << data.instr.ld_st_reg.rn << ", r" << data.instr.ld_st_reg.rm << "]" << endl;
       }
       return LDRR;
     }
     else if (data.instr.class_type.opB == LD_ST_OPB_STR) {
       // 315: write code to print str
       if (opts.instrs) {
-         cout << "str r" << data.instr.ld_st_reg.rt << " [r" << data.instr.ld_st_reg.rn << ", r" << data.instr.ld_st_reg.rm << "]" << endl;
+         cout << "str r" << data.instr.ld_st_reg.rt << ", [r" << data.instr.ld_st_reg.rn << ", r" << data.instr.ld_st_reg.rm << "]" << endl;
       }
       return STRR;
     }
@@ -243,14 +243,14 @@ LD_ST_Ops decode (const LD_ST_Type data) {
     if (data.instr.ld_st_imm.op == LD_ST_LDB) {
       // 315: write code to print ldrb
       if (opts.instrs) {
-         cout << "ldrb r" << data.instr.ld_st_reg.rt << " [r" << data.instr.ld_st_reg.rn << ", #" << setbase(10) << (data.instr.ld_st_imm.imm*4) << "]" << endl;
+         cout << "ldrb r" << data.instr.ld_st_reg.rt << ", [r" << data.instr.ld_st_reg.rn << ", #" << setbase(10) << (data.instr.ld_st_imm.imm*4) << "]" << endl;
       }
       return LDRBI;
     }
     else if (data.instr.ld_st_imm.op == LD_ST_STB) {
       // 315: write code to print strb
       if (opts.instrs) {
-         cout << "strb r" << data.instr.ld_st_reg.rt << " [r" << data.instr.ld_st_reg.rn << ", #" << setbase(10) << (data.instr.ld_st_imm.imm*4) << "]" << endl;
+         cout << "strb r" << data.instr.ld_st_reg.rt << ", [r" << data.instr.ld_st_reg.rn << ", #" << setbase(10) << (data.instr.ld_st_imm.imm*4) << "]" << endl;
       }
       return STRBI;
     }
