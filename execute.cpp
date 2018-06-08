@@ -478,13 +478,13 @@ void execute() {
           }
           if (misc.instr.push.reg_list != 0) {
              addr -= (4 * bitCount(misc.instr.push.reg_list));
-             unsigned short temp = misc.instr.push.reg_list;
+             unsigned short tmp = misc.instr.push.reg_list;
              for (int i = 0; i < 8; i++) {
-                if (temp & 1) {
+                if (tmp & 1) {
                    dmem.write(addr, rf[i]);
                    addr += 4;
                 }
-                temp >>= 1;
+                tmp >>= 1;
              }
           }
           break;
@@ -495,16 +495,15 @@ void execute() {
            }
           if (misc.instr.pop.reg_list != 0) {
              addr -= (4 * bitCount(misc.instr.pop.reg_list));
-             unsigned short temp = misc.instr.pop.reg_list;
+             unsigned short tmp = misc.instr.pop.reg_list;
              for (int i = 0; i < 8; i++) {
-                if (temp & 1) {
+                if (tmp & 1) {
                    rf.write(addr, rf[i]);
-                   addr  += 4;
+                   addr += 4;
                 }
-                temp >>= 1;
+                tmp >>= 1;
              }
           }
-
           break;
         case MISC_SUB:
 	  // 1 reg read, 1 reg write, no memory access, no flag updates
@@ -542,13 +541,13 @@ void execute() {
       // need to implement
       if (ldm.instr.ldm.reg_list != 0) {
          addr = rf[ldm.instr.ldm.rn] - (4*bitCount(ldm.instr.ldm.reg_list));
-         unsigned short temp = ldm.instr.ldm.reg_list;
+         unsigned short tmp = ldm.instr.ldm.reg_list;
          for (int i = 0; i < 8; i++) {
-            if (temp & 1) {
+            if (tmp & 1) {
                rf.write(addr, rf[i]);
                addr += 4;
             }
-            temp >>= 1;
+            tmp >>= 1;
          }
       }
       caches.access(addr);
@@ -559,13 +558,13 @@ void execute() {
       // need to implement
       if (stm.instr.stm.reg_list != 0) {
          addr = rf[stm.instr.stm.rn] - (4*bitCount(stm.instr.stm.reg_list));
-         unsigned short temp = stm.instr.stm.reg_list;
+         unsigned short tmp = stm.instr.stm.reg_list;
          for (int i = 0; i < 8; i++) {
-            if (temp & 1) {
+            if (tmp & 1) {
                dmem.write(addr, rf[i]);
                addr += 4;
             }
-            temp >>= 1;
+            tmp >>= 1;
          }
       }
       caches.access(addr);
