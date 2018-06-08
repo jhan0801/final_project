@@ -293,25 +293,25 @@ void execute() {
           break;
         case ALU_MOV:
           // N and Z flags set, reg reads and writes incremented, no mem access
-	  setNegZero(rf[alu.instr.mov.rdn]);
+	       setNegZero(rf[alu.instr.mov.rdn]);
           stats.numRegReads += 1;
-	  stats.numRegWrites += 1;
+	       stats.numRegWrites += 1;
           rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
           break;
         case ALU_CMP:
          // YOU MUSH IMPLEMENT THIS
-         stats.numRegReads += 2;
-         setNegZero(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
-         setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
+          stats.numRegReads += 2;
+          setNegZero(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
+          setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
           break;
         case ALU_ADD8I:
-          // N, Z, C, V flags set, reg reads and writes each + 1, no mem access
-          stats.numRegReads += 1;
-	  stats.numRegWrites += 1;
-	  setNegZero(rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
-	  setCarryOverflow(rf[alu.instr.add8i.rdn], alu.instr.add8i.imm, OF_ADD);
-          rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
-          break;
+           // N, Z, C, V flags set, reg reads and writes each + 1, no mem access
+           stats.numRegReads += 1;
+      	  stats.numRegWrites += 1;
+      	  setNegZero(rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
+      	  setCarryOverflow(rf[alu.instr.add8i.rdn], alu.instr.add8i.imm, OF_ADD);
+           rf.write(alu.instr.add8i.rdn, rf[alu.instr.add8i.rdn] + alu.instr.add8i.imm);
+           break;
         case ALU_SUB8I:
           //N, Z, C, V flags set, 1 reg read, 1 reg write, no mem access
           setNegZero(rf[alu.instr.sub8i.rdn] - alu.instr.sub8i.imm);
@@ -371,9 +371,9 @@ void execute() {
       switch(sp_ops) {
         case SP_MOV:
           // 1 each of reg write and read, no mem access, N, Z flags set
-	  stats.numRegReads++;
-	  stats.numRegWrites++;
-	  setNegZero(rf[sp.instr.mov.rm]);
+      	 stats.numRegReads++;
+      	 stats.numRegWrites++;
+      	 setNegZero(rf[sp.instr.mov.rm]);
           rf.write((sp.instr.mov.d << 3 ) | sp.instr.mov.rd, rf[sp.instr.mov.rm]);
           break;
         case SP_ADD:
@@ -395,7 +395,7 @@ void execute() {
       ldst_ops = decode(ld_st);
       switch(ldst_ops) {
         case STRI:
-	  // 2 reg reads, 1 reg write, 0 mem reads, 1 mem write
+	       // 2 reg reads, 1 reg write, 0 mem reads, 1 mem write
           addr = rf[ld_st.instr.ld_st_imm.rn] + (ld_st.instr.ld_st_imm.imm * 4);
           dmem.write(addr, rf[ld_st.instr.ld_st_imm.rt]);
       	 stats.numRegReads += 2;
@@ -404,74 +404,74 @@ void execute() {
       	 caches.access(addr);
           break;
         case LDRI:
-	  // 1 reg reads, 1 reg writes, 1 mem read, 0 mem writes
-          addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
-          rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
-	  stats.numRegReads++;
-	  stats.numRegWrites++;
-	  stats.numMemReads++;
-	  caches.access(addr);
-          break;
+	        // 1 reg reads, 1 reg writes, 1 mem read, 0 mem writes
+           addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
+           rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
+      	  stats.numRegReads++;
+      	  stats.numRegWrites++;
+      	  stats.numMemReads++;
+      	  caches.access(addr);
+           reak;
         case STRR:
-	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write
-	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm] * 4;
-	  dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
-	  stats.numRegReads += 3;
-	  stats.numMemWrites++;
-	  caches.access(addr);
-          break;
+      	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write
+      	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm] * 4;
+      	  dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
+      	  stats.numRegReads += 3;
+      	  stats.numMemWrites++;
+      	  caches.access(addr);
+           break;
         case LDRR:
-	  // 2 reg reads, 1 reg write, 1 mem read, 0 mem writes
-	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm] * 4;
-	  rf.write(rf[ld_st.instr.ld_st_reg.rt], dmem[addr]);
-	  stats.numRegReads += 2;
-	  stats.numRegWrites++;
-	  stats.numMemReads++;
-	  caches.access(addr);
-          break;
+      	  // 2 reg reads, 1 reg write, 1 mem read, 0 mem writes
+      	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm] * 4;
+      	  rf.write(rf[ld_st.instr.ld_st_reg.rt], dmem[addr]);
+      	  stats.numRegReads += 2;
+      	  stats.numRegWrites++;
+      	  stats.numMemReads++;
+      	  caches.access(addr);
+           break;
         case STRBI:
           // need to implement
           // 2 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
-          stats.numRegReads += 2;
-	  stats.numMemWrites++;
-	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
-	  caches.access(addr);
-	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
-	  temp.set_data_ubyte4(dmem[addr] & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
+           stats.numRegReads += 2;
+      	  stats.numMemWrites++;
+      	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
+      	  caches.access(addr);
+      	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
+      	  temp.set_data_ubyte4(dmem[addr] & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
           break;
         case LDRBI:
-          // need to implement
-	  // 1 reg read, 1 reg write, 1 mem read, 0 mem writes, no flag updates
-	  stats.numRegReads++;
-	  stats.numRegWrites++;
-	  stats.numMemReads++;
-	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
-	  caches.access(addr);
-	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
-	  rf.write(ld_st.instr.ld_st_imm.rt, temp.data_ubyte4(dmem[addr] & 3));
-	  // get the data at the given word address and byte index and write it to the destination reg
+           // need to implement
+      	  // 1 reg read, 1 reg write, 1 mem read, 0 mem writes, no flag updates
+      	  stats.numRegReads++;
+      	  stats.numRegWrites++;
+      	  stats.numMemReads++;
+      	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
+      	  caches.access(addr);
+      	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
+      	  rf.write(ld_st.instr.ld_st_imm.rt, temp.data_ubyte4(dmem[addr] & 3));
+      	  // get the data at the given word address and byte index and write it to the destination reg
           break;
         case STRBR:
-          // need to implement
-	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
-	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
-	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
-	  temp.set_data_ubyte4(dmem[addr] & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
-	  stats.numRegReads += 3;
-	  stats.numMemWrites++;
-	  caches.access(addr);
+           // need to implement
+      	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
+      	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
+      	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
+      	  temp.set_data_ubyte4(dmem[addr] & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
+      	  stats.numRegReads += 3;
+      	  stats.numMemWrites++;
+      	  caches.access(addr);
           break;
         case LDRBR:
-          // need to implement
-	  // 2 reg reads, 1 reg write, 1 mem read, 0 mem writes, no flag updates
-	  stats.numRegReads += 2;
-	  stats.numRegWrites++;
-	  stats.numMemReads++;
-	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm]; // calculate address
-	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
-	  rf.write(ld_st.instr.ld_st_imm.rt, temp.data_ubyte4(dmem[addr] & 3));
-	  caches.access(addr);
-          break;
+           // need to implement
+      	  // 2 reg reads, 1 reg write, 1 mem read, 0 mem writes, no flag updates
+      	  stats.numRegReads += 2;
+      	  stats.numRegWrites++;
+      	  stats.numMemReads++;
+      	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm]; // calculate address
+      	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
+      	  rf.write(ld_st.instr.ld_st_imm.rt, temp.data_ubyte4(dmem[addr] & 3));
+      	  caches.access(addr);
+           break;
       }
       break;
     case MISC:
