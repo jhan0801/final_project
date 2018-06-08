@@ -222,6 +222,7 @@ void execute() {
   unsigned int list, mask;
   int num1, num2, result, BitCount, word;
   unsigned int bit;
+  unsigned int word_addr, byte_index, val;
 
   /* Convert instruction to correct type */
   /* Types are described in Section A5 of the armv7 manual */
@@ -436,8 +437,8 @@ void execute() {
 	  stats.numMemWrites++;
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
 	  caches.access(addr);
-	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
-	  temp.set_data_ubyte4(dmem[addr] & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
+	  temp = dmem[addr & !3]; // get everything but the byte index (up until the last 2 bits)
+	  temp.set_data_ubyte4(addr & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
           break;
         case LDRBI:
           // need to implement
@@ -447,16 +448,17 @@ void execute() {
 	  stats.numMemReads++;
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
 	  caches.access(addr);
-	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
-	  rf.write(ld_st.instr.ld_st_imm.rt, temp.data_ubyte4(dmem[addr] & 3));
-	  // get the data at the given word address and byte index and write it to the destination reg
+	  word_addr = addr & 3;
+	  byte_index = addr & !3;
+	  val = signExtend8to32ui(dmem[word_addr].data_ubyte4(byte_index));
+	  rf.write(ld_st.instr.ld_st_imm.rt, val);
           break;
         case STRBR:
           // need to implement
 	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm];
-	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
-	  temp.set_data_ubyte4(dmem[addr] & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
+	  temp = dmem[addr & !3]; // get everything but the byte index (up until the last 2 bits)
+	  temp.set_data_ubyte4(addr & 3, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
 	  stats.numRegReads += 3;
 	  stats.numMemWrites++;
 	  caches.access(addr);
@@ -468,8 +470,10 @@ void execute() {
 	  stats.numRegWrites++;
 	  stats.numMemReads++;
 	  addr = rf[ld_st.instr.ld_st_imm.rn] + rf[ld_st.instr.ld_st_reg.rm]; // calculate address
-	  temp = dmem[addr] & !3; // get everything but the byte index (up until the last 2 bits)
-	  rf.write(ld_st.instr.ld_st_imm.rt, temp.data_ubyte4(dmem[addr] & 3));
+	  word_addr = addr & 3;
+	  byte_index = addr & !3;
+	  val = signExtend8to32ui(dmem[word_addr].data_ubyte4(byte_index));
+	  rf.write(ld_st.instr.ld_st_imm.rt, val);
 	  caches.access(addr);
           break;
       }
