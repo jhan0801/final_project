@@ -230,6 +230,7 @@ SP_Ops decode (const SP_Type data) {
       else {
         cout << " r" << setbase(10) << data.instr.cmp.rd << ", r" << data.instr.cmp.rm << endl;
       }
+    }
     return SP_CMP;
   }
   else {
