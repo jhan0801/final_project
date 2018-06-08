@@ -494,6 +494,7 @@ void execute() {
 	    stats.numMemWrites++;
 	    stats.numRegWrites++;
 	    stats.numRegReads += 2;
+	    caches.access(addr);
           }
           if (misc.instr.push.reg_list != 0) {
              addr -= (4 * bitCount(misc.instr.push.reg_list));
@@ -504,6 +505,7 @@ void execute() {
              for (int i = 0; i < 8; i++) {
                 if (tmp & 1) {
                    dmem.write(addr, rf[i]);
+		   caches.access(addr);
                    addr += 4;
 		   stats.numMemWrites++;
 		   stats.numRegReads++;
@@ -516,9 +518,11 @@ void execute() {
           if (misc.instr.pop.reg_list != 0) {
              addr = SP;
              unsigned short tmp = misc.instr.pop.reg_list;
+	     caches.access(addr);
              for (int i = 0; i < 8; i++) {
                 if (tmp & 1) {
                    rf.write(i, dmem[addr]);
+		   caches.access(addr);
                    addr += 4;
 		   stats.numMemReads++;
 		   stats.numRegWrites++;
@@ -531,6 +535,7 @@ void execute() {
           }
           if (misc.instr.pop.m == 1) {
             rf.write(PC_REG, dmem[addr]);
+	    caches.access(addr);
             rf.write(SP_REG, SP + 4);
 	    stats.numRegWrites += 2;
 	    stats.numMemReads++;
@@ -594,6 +599,7 @@ void execute() {
          for (int i = 0; i < 8; i++) {
             if (tmp & 1) {
                rf.write(rf[i], dmem[addr]);
+	       caches.access(addr);
                addr += 4;
 	       stats.numMemReads++;
 	       stats.numRegWrites++;
@@ -601,7 +607,6 @@ void execute() {
             tmp >>= 1;
          }
       }
-      caches.access(addr);
       break;
     case STM:
       decode(stm);
@@ -613,6 +618,7 @@ void execute() {
          for (int i = 0; i < 8; i++) {
             if (tmp & 1) {
                dmem.write(addr, rf[i]);
+	       caches.access(addr);
                addr += 4;
 	       stats.numRegReads++;
 	       stats.numMemWrites++;
@@ -620,7 +626,6 @@ void execute() {
             tmp >>= 1;
          }
       }
-      caches.access(addr);
       break;
     case LDRL:
       // This instruction is complete, nothing needed
@@ -645,8 +650,6 @@ void execute() {
     case ADD_SP:
       // 1 reg write, 1 reg read, no mem access
       decode(addsp);
-      stats.numRegWrites++;
-      stats.numRegReads++;
       rf.write(addsp.instr.add.rd, SP + (addsp.instr.add.imm*4));
       break;
     default:

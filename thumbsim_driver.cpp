@@ -115,9 +115,8 @@ bool Cache::access(unsigned int address) {
   byte_bits = log2(blocksize);
   block_bits = log2(size);
   // isolate the block index by getting rid of the tag and then the byte index
-  mask = ((unsigned int)exp2(block_bits + byte_bits) & !(unsigned int)(exp2(byte_bits) - 1));
-  block_index = address & mask;
-  block_index = block_index >> (unsigned int)byte_bits;
+  mask = (unsigned int)exp2(block_bits + byte_bits);
+  block_index = (address & mask) >> (unsigned int)byte_bits;
   // isolate the block index by getting rid of everything else
   // tag = address & !(unsigned int)(exp2(byte_bits + block_bits) - 1);
   tag = address >> (unsigned int)(block_bits + byte_bits);
