@@ -271,7 +271,7 @@ void execute() {
           break;
         case ALU_ADDR:
           // N, Z, C, V flags set, 2 reg reads, 1 reg write, no mem access
-      	  setCarryOverflow(rf[alu.instr.addr.rn], rf[alu.instr.addr.rn], OF_ADD);
+      	  setCarryOverflow(rf[alu.instr.addr.rn], rf[alu.instr.addr.rm], OF_ADD);
       	  setNegZero(rf[alu.instr.addr.rn] + rf[alu.instr.addr.rm]);
           stats.numRegReads += 2;
 	  stats.numRegWrites += 1;
@@ -279,7 +279,7 @@ void execute() {
           break;
         case ALU_SUBR:
       	  // N, Z, C, V flags set, reg reads + 2, writes + 1, no mem access
-      	  setCarryOverflow(rf[alu.instr.subr.rn], rf[alu.instr.subr.rn], OF_SUB);
+      	  setCarryOverflow(rf[alu.instr.subr.rn], rf[alu.instr.subr.rm], OF_SUB);
       	  setNegZero(rf[alu.instr.subr.rn] - rf[alu.instr.subr.rm]);
       	  stats.numRegReads += 2;
       	  stats.numRegWrites += 1;
