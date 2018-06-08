@@ -475,8 +475,7 @@ void execute() {
           if (misc.instr.push.m == 1) {
             addr = SP - 4;
             dmem.write(addr, LR);
-         }
-
+          }
           if (misc.instr.push.reg_list != 0) {
              addr -= (4 * bitCount(misc.instr.push.reg_list));
              unsigned short temp = misc.instr.push.reg_list;
@@ -490,6 +489,10 @@ void execute() {
           }
           break;
         case MISC_POP:
+           if (misc.instr.pop.m == 1) {
+             addr = SP - 4;
+             rf.write(addr, PC_REG);
+           }
           if (misc.instr.pop.reg_list != 0) {
              addr = SP - (4 * bitCount(misc.instr.pop.reg_list));
              unsigned short temp = misc.instr.pop.reg_list;
@@ -501,9 +504,7 @@ void execute() {
                 temp >>= 1;
              }
           }
-          if (misc.instr.pop.m == 1) {
-             rf.write(addr, PC_REG);
-          }
+
           break;
         case MISC_SUB:
 	  // 1 reg read, 1 reg write, no memory access, no flag updates
