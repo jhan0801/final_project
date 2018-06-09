@@ -491,7 +491,7 @@ void execute() {
 	       // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write, no flag updates
 	       addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
 	       temp = dmem[addr]; // get everything but the byte index (up until the last 2 bits)
-	       temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_imm.rt]); // set the byte to the value in rt
+	       temp.set_data_ubyte4(0, rf[ld_st.instr.ld_st_reg.rt]); // set the byte to the value in rt
           dmem.write(addr, temp);
           stats.numRegReads += 3;
 	       stats.numMemWrites++;
@@ -504,7 +504,7 @@ void execute() {
 	       stats.numMemReads++;
 	       addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm]; // calculate address
 	       val = signExtend8to32ui(dmem[addr].data_ubyte4(0));
-	       rf.write(ld_st.instr.ld_st_imm.rt, val);
+	       rf.write(ld_st.instr.ld_st_reg.rt, val);
 	       caches.access(addr);
           break;
       }
