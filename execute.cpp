@@ -386,14 +386,15 @@ void execute() {
         case SP_MOV:
          // 1 reg read, 1 reg write, no mem access
           if (sp.instr.mov.d == 1) {
-             setCarryOverflow(rf[sp.instr.mov.rm], 0, OF_ADD);
-             setNegZero(rf[sp.instr.mov.rm]);
+             setCarryOverflow(rf[(sp.instr.mov.d << 3) | sp.instr.mov.rd], 0, OF_ADD);
+             setNegZero(rf[(sp.instr.mov.d << 3) | sp.instr.mov.rd]);
              rf.write((sp.instr.mov.d << 3 ) | sp.instr.mov.rd, rf[sp.instr.mov.rm]);
           }
           else {
-             setCarryOverflow(rf[sp.instr.mov.rm], 0 , OF_ADD);
-             setNegZero(rf[sp.instr.mov.rm]);
+
              rf.write(sp.instr.mov.rd, rf[sp.instr.mov.rm]);
+             setCarryOverflow(rf[sp.instr.mov.rd], 0 , OF_ADD);
+             setNegZero(rf[sp.instr.mov.rd]);
           }
       	 stats.numRegReads++;
       	 stats.numRegWrites++;
