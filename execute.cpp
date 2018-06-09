@@ -388,7 +388,7 @@ void execute() {
           if (sp.instr.mov.d == 1) {
              setCarryOverflow(rf[8+sp.instr.mov.rd], 0, OF_ADD);
              setNegZero(rf[8+sp.instr.mov.rd]);
-             rf.write(8+Asp.instr.mov.rd, rf[sp.instr.mov.rm]);
+             rf.write(8+sp.instr.mov.rd, rf[sp.instr.mov.rm]);
           }
           else {
 
