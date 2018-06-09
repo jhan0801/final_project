@@ -552,7 +552,7 @@ void execute() {
                 }
                 tmp >>= 1;
              }
-             rf.write(SP_REG, SP + 4*bitCount(misc.instr.push.reg_list));
+             rf.write(SP_REG, SP + 4*bitCount(misc.instr.pop.reg_list));
 	          stats.numRegReads++;
 	          stats.numRegWrites++;
           }
