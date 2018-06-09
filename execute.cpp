@@ -303,11 +303,11 @@ void execute() {
           break;
         case ALU_MOV:
           // 1 reg read, 1 reg write, no mem access, N, Z flags set
-          setCarryOverflow(rf[alu.instr.mov.rdn], 0, OF_ADD);
-	       setNegZero(rf[alu.instr.mov.rdn]);
           stats.numRegReads += 1;
 	       stats.numRegWrites += 1;
           rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
+          setCarryOverflow(rf[alu.instr.mov.rdn], 0, OF_ADD);
+	       setNegZero(rf[alu.instr.mov.rdn]);
           break;
         case ALU_CMP:
          // 1 reg read, 0 reg writes, no mem access, N, Z, C, V flags set
@@ -385,13 +385,13 @@ void execute() {
         case SP_MOV:
          // 1 reg read, 1 reg write, no mem access
           if (sp.instr.mov.d == 1) {
-             setCarryOverflow(rf[(sp.instr.mov.d << 3 ) | sp.instr.mov.rd], 0, OF_ADD);
-             setNegZero(rf[(sp.instr.mov.d << 3 ) | sp.instr.mov.rd]);
+             setCarryOverflow(rf[sp.instr.mov.rm], 0, OF_ADD);
+             setNegZero(rf[sp.instr.mov.rm]);
              rf.write((sp.instr.mov.d << 3 ) | sp.instr.mov.rd, rf[sp.instr.mov.rm]);
           }
           else {
-             setCarryOverflow(rf[sp.instr.mov.rd], 0 , OF_ADD);
-             setNegZero(rf[sp.instr.mov.rd]);
+             setCarryOverflow(rf[sp.instr.mov.rm], 0 , OF_ADD);
+             setNegZero(rf[sp.instr.mov.rm]);
              rf.write(sp.instr.mov.rd, rf[sp.instr.mov.rm]);
           }
       	 stats.numRegReads++;
