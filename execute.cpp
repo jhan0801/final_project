@@ -407,7 +407,7 @@ void execute() {
           }
           else {
             setCarryOverflow(rf[sp.instr.add.rd], rf[sp.instr.add.rm], OF_ADD);
-            setNegZero(rf[sp.instr.add.rd], rf[sp.instr.add.rm]);
+            setNegZero(rf[sp.instr.add.rd]);
             rf.write(sp.instr.add.rd, rf[sp.instr.add.rd] + rf[sp.instr.add.rm]);
           }
 
