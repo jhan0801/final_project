@@ -452,7 +452,7 @@ void execute() {
            break;
         case STRR:
       	  // 3 reg reads, 0 reg writes, 0 mem reads, 1 mem write
-      	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm] * 4;
+      	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
       	  dmem.write(addr, rf[ld_st.instr.ld_st_reg.rt]);
       	  stats.numRegReads += 3;
       	  stats.numMemWrites++;
@@ -460,7 +460,7 @@ void execute() {
           break;
         case LDRR:
       	  // 2 reg reads, 1 reg write, 1 mem read, 0 mem writes
-      	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm] * 4;
+      	  addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm];
       	  rf.write(ld_st.instr.ld_st_reg.rt, dmem[addr]);
       	  stats.numRegReads += 2;
       	  stats.numRegWrites++;
