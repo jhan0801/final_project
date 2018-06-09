@@ -651,7 +651,7 @@ void execute() {
             tmp >>= 1;
          }
       }
-      rf.write(stm.instr.stm.rn, rf[stm.instr.stm.rn] + (4*bitCount(ldm.instr.stm.reg_list)));
+      rf.write(stm.instr.stm.rn, rf[stm.instr.stm.rn] + (4*bitCount(stm.instr.stm.reg_list)));
       caches.access(addr);
       break;
     case LDRL:
