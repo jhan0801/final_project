@@ -403,9 +403,9 @@ void execute() {
         case SP_ADD:
    	    // 2 reg reads, 1 reg write, no mem access
           if (sp.instr.add.d == 1) {
-            setCarryOverflow(rf[(sp.instr.add.d << 3) | sp.instr.add.rd], rf[sp.instr.add.rm], OF_ADD);
-            setNegZero(rf[(sp.instr.add.d << 3) | sp.instr.add.rd] + rf[sp.instr.add.rm]);
-            rf.write((sp.instr.add.d << 3) | sp.instr.add.rd, rf[(sp.instr.add.d << 3) | sp.instr.add.rd] + rf[sp.instr.add.rm]);
+            setCarryOverflow(rf[8+sp.instr.add.rd], rf[sp.instr.add.rm], OF_ADD);
+            setNegZero(8+sp.instr.add.rd] + rf[sp.instr.add.rm]);
+            rf.write(8+sp.instr.add.rd, rf[(sp.instr.add.d << 3) | sp.instr.add.rd] + rf[sp.instr.add.rm]);
           }
           else {
             setCarryOverflow(rf[sp.instr.add.rd], rf[sp.instr.add.rm], OF_ADD);
