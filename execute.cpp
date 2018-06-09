@@ -388,7 +388,7 @@ void execute() {
           if (sp.instr.mov.d == 1) {
              setCarryOverflow(rf[8+sp.instr.mov.rd], 0, OF_ADD);
              setNegZero(rf[8+sp.instr.mov.rd]);
-             rf.write(8+sp.instr.mov.rd, rf[sp.instr.mov.rm]);
+             rf.write(8+Asp.instr.mov.rd, rf[sp.instr.mov.rm]);
           }
           else {
 
@@ -404,7 +404,7 @@ void execute() {
    	    // 2 reg reads, 1 reg write, no mem access
           if (sp.instr.add.d == 1) {
             setCarryOverflow(rf[8+sp.instr.add.rd], rf[sp.instr.add.rm], OF_ADD);
-            setNegZero(8+sp.instr.add.rd] + rf[sp.instr.add.rm]);
+            setNegZero(rf[8+sp.instr.add.rd] + rf[sp.instr.add.rm]);
             rf.write(8+sp.instr.add.rd, rf[(sp.instr.add.d << 3) | sp.instr.add.rd] + rf[sp.instr.add.rm]);
           }
           else {
