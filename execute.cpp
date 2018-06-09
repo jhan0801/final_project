@@ -443,7 +443,7 @@ void execute() {
           break;
         case LDRI:
 	       // 1 reg reads, 1 reg writes, 1 mem read, 0 mem writes
-           addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm * 4;
+           addr = rf[ld_st.instr.ld_st_imm.rn] + (ld_st.instr.ld_st_imm.imm * 4);
            rf.write(ld_st.instr.ld_st_imm.rt, dmem[addr]);
       	  stats.numRegReads++;
       	  stats.numRegWrites++;
@@ -621,7 +621,7 @@ void execute() {
          unsigned short tmp = ldm.instr.ldm.reg_list;
          for (int i = 0; i < 8; i++) {
             if (tmp & 1) {
-               rf.write(rf[i], dmem[addr]);
+               rf.write(i, dmem[addr]);
                addr += 4;
 	            stats.numMemReads++;
 	            stats.numRegWrites++;
