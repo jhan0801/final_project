@@ -303,11 +303,12 @@ void execute() {
           break;
         case ALU_MOV:
           // 1 reg read, 1 reg write, no mem access, N, Z flags set
+          setCarryOverflow(rf[alu.instr.mov.rdn], 0, OF_ADD);
+	       setNegZero(rf[alu.instr.mov.rdn]);
           stats.numRegReads += 1;
 	       stats.numRegWrites += 1;
           rf.write(alu.instr.mov.rdn, alu.instr.mov.imm);
-          setCarryOverflow(rf[alu.instr.mov.rdn], 0, OF_ADD);
-	       setNegZero(rf[alu.instr.mov.rdn]);
+
           break;
         case ALU_CMP:
          // 1 reg read, 0 reg writes, no mem access, N, Z, C, V flags set
