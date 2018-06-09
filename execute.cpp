@@ -559,6 +559,8 @@ void execute() {
 	          stats.numRegWrites++;
           }
           if (misc.instr.pop.m == 1) {
+            if (misc.instr.pop.reg_list == 0)
+               addr = SP;
             rf.write(PC_REG, dmem[addr]);
             rf.write(SP_REG, SP + 4);
 	         stats.numRegWrites += 2;
