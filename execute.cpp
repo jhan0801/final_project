@@ -312,8 +312,8 @@ void execute() {
         case ALU_CMP:
          // 1 reg read, 0 reg writes, no mem access, N, Z, C, V flags set
           stats.numRegReads++;
-          setNegZero(rf[alu.instr.cmp.rdn] - alu.instr.cmp.imm);
-          setCarryOverflow(rf[alu.instr.cmp.rdn], alu.instr.cmp.imm, OF_SUB);
+          setNegZero(rf[alu.instr.cmp.rdn] - signExtend8to32ui(alu.instr.cmp.imm));
+          setCarryOverflow(rf[alu.instr.cmp.rdn], signExtend8to32ui(alu.instr.cmp.imm), OF_SUB);
           break;
         case ALU_ADD8I:
            // 1 reg read, 1 reg write, no mem access, N, Z, C, V flags set
