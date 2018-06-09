@@ -484,8 +484,8 @@ void execute() {
 	       stats.numMemReads++;
 	       addr = rf[ld_st.instr.ld_st_imm.rn] + ld_st.instr.ld_st_imm.imm;
 	       caches.access(addr);
-	       // val = signExtend8to32ui(dmem[addr].data_ubyte4(0));
-          val = dmem[addr].data_ubyte4(0);
+	       val = signExtend8to32ui(dmem[addr].data_ubyte4(0));
+          // val = dmem[addr].data_ubyte4(0);
 	       rf.write(ld_st.instr.ld_st_imm.rt, val);
           break;
         case STRBR:
@@ -504,8 +504,8 @@ void execute() {
 	       stats.numRegWrites++;
 	       stats.numMemReads++;
 	       addr = rf[ld_st.instr.ld_st_reg.rn] + rf[ld_st.instr.ld_st_reg.rm]; // calculate address
-	       // val = signExtend8to32ui(dmem[addr].data_ubyte4(0));
-          val = dmem[addr].data_ubyte4(0);
+	       val = signExtend8to32ui(dmem[addr].data_ubyte4(0));
+          //val = dmem[addr].data_ubyte4(0);
 	       rf.write(ld_st.instr.ld_st_reg.rt, val);
 	       caches.access(addr);
           break;
