@@ -618,7 +618,7 @@ void execute() {
       decode(ldm);
       // need to implement
       if (ldm.instr.ldm.reg_list != 0) {
-         addr = rf[ldm.instr.ldm.rn] - (4*bitCount(ldm.instr.ldm.reg_list));
+         addr = rf[ldm.instr.ldm.rn];
 	      stats.numRegReads++;
          unsigned short tmp = ldm.instr.ldm.reg_list;
          for (int i = 0; i < 8; i++) {
@@ -630,6 +630,7 @@ void execute() {
             }
             tmp >>= 1;
          }
+         rf.write(ldm.instr.ldm.rn, rf[ldm.instr.ldm.rn] + (4*bitCount(ldm.instr.ldm.reg_list)));
       }
       caches.access(addr);
       break;
@@ -637,7 +638,7 @@ void execute() {
       decode(stm);
       // need to implement
       if (stm.instr.stm.reg_list != 0) {
-         addr = rf[stm.instr.stm.rn] - (4*bitCount(stm.instr.stm.reg_list));
+         addr = rf[stm.instr.stm.rn];
 	      stats.numRegReads++;
          unsigned short tmp = stm.instr.stm.reg_list;
          for (int i = 0; i < 8; i++) {
@@ -650,6 +651,7 @@ void execute() {
             tmp >>= 1;
          }
       }
+      rf.write(stm.instr.stm.rn, rf[stm.instr.stm.rn] + (4*bitCount(ldm.instr.stm.reg_list)));
       caches.access(addr);
       break;
     case LDRL:
