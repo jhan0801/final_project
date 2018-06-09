@@ -618,6 +618,6 @@ int decode (const LDRL_Type data) {
 int decode (const ADD_SP_Type data) {
   // complete
   if (opts.instrs) {
-    cout << "add r" << data.instr.add.rd << ", sp, #" << data.instr.add.imm*4 << endl;
+    cout << "add r" << data.instr.add.rd << ", sp, #" << setbase(10) << data.instr.add.imm*4 << endl;
   }
 }
